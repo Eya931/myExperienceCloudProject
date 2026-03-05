@@ -1,0 +1,451 @@
+/* ===========================
+   JOB CARDS – GOLEER STYLE
+   =========================== */
+
+:host {
+    display: block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.page {
+    background: #fafafa;
+    min-height: 100vh;
+    color: #1e1e2f;
+}
+
+/* ========== SECTION HEADER ========== */
+
+.section-header {
+    text-align: center;
+    padding: 3rem 2rem 1rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e1e2f;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* ========== SEARCH BAR ========== */
+
+.search-section {
+    max-width: 1000px;
+    margin: 2rem auto 0;
+    padding: 0 2rem;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 60px;
+    padding: 0.6rem 0.6rem 0.6rem 1.8rem;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.07);
+    border: 1px solid #e5e7eb;
+    gap: 0;
+}
+
+.search-field {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+    padding: 0.5rem 1rem;
+}
+
+.filter-field {
+    flex: 0.8;
+}
+
+.field-icon {
+    font-size: 1.15rem;
+    opacity: 0.4;
+    flex-shrink: 0;
+}
+
+.field-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: #1e1e2f;
+    background: transparent;
+    font-weight: 500;
+    min-width: 0;
+}
+
+.field-input::placeholder {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
+.field-select {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: #1e1e2f;
+    background: transparent;
+    font-weight: 500;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 0;
+}
+
+.search-divider {
+    width: 1px;
+    height: 36px;
+    background: #e5e7eb;
+    flex-shrink: 0;
+}
+
+.find-btn {
+    background: #f97316;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.9rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.15s;
+    flex-shrink: 0;
+}
+
+.find-btn:hover {
+    background: #ea580c;
+    transform: scale(1.03);
+}
+
+/* ========== FILTERS ========== */
+
+.filter-section {
+    max-width: 1060px;
+    margin: 1.8rem auto 0;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.filter-btn {
+    padding: 0.45rem 1rem;
+    border-radius: 50px;
+    border: 1.5px solid #e5e7eb;
+    background: #ffffff;
+    color: #4b5563;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.filter-btn:hover {
+    border-color: #f97316;
+    color: #f97316;
+}
+
+.filter-btn.active {
+    background: #f97316;
+    color: #ffffff;
+    border-color: #f97316;
+}
+
+.filter-btn.type-btn.active {
+    background: #1e1e2f;
+    border-color: #1e1e2f;
+    color: #ffffff;
+}
+
+.results-count {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* ========== JOB GRID ========== */
+
+.job-grid {
+    max-width: 1200px;
+    margin: 2.5rem auto 3.5rem;
+    padding: 0 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2.2rem;
+}
+
+/* ========== CARD ========== */
+
+.card {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 1.6rem 1.8rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    gap: 1.5rem;
+}
+
+.card:hover {
+    border-color: #f97316;
+    box-shadow: 0 8px 30px rgba(249, 115, 22, 0.1);
+    transform: translateY(-3px);
+}
+
+.card-top {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #1e1e2f;
+}
+
+.avatar-red    { background: #fee2e2; }
+.avatar-purple { background: #ede9fe; }
+.avatar-blue   { background: #dbeafe; }
+.avatar-orange { background: #ffedd5; }
+.avatar-green  { background: #dcfce7; }
+.avatar-teal   { background: #ccfbf1; }
+
+.card-header-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.job-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e1e2f;
+    margin: 0 0 0.15rem;
+    line-height: 1.3;
+}
+
+.job-company {
+    font-size: 0.82rem;
+    color: #9ca3af;
+    margin: 0;
+}
+
+.job-desc {
+    font-size: 0.82rem;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.meta-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: 50px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.pill-icon {
+    font-size: 0.72rem;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.tag {
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.tag.dept-tag {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.tag.level-tag {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.tag.skill-tag {
+    background: #f0fdf4;
+    color: #15803d;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.7rem;
+    border-top: 1px solid #f3f4f6;
+    margin-top: auto;
+}
+
+.posted-time {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.apply-btn {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #f97316;
+    transition: color 0.15s;
+}
+
+.card:hover .apply-btn {
+    color: #ea580c;
+}
+
+/* ========== STATES ========== */
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6b7280;
+    grid-column: 1 / -1;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 0.8rem;
+}
+
+.empty-state h3 {
+    margin: 0 0 0.4rem;
+    color: #1e1e2f;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.empty-state p {
+    margin: 0;
+}
+
+.error-panel {
+    text-align: center;
+    padding: 3rem 2rem;
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.error-panel h3 {
+    margin: 0 0 0.4rem;
+    color: #7f1d1d;
+    font-size: 1.1rem;
+}
+
+.error-panel p {
+    color: #6b7280;
+    margin: 0;
+}
+
+.loading-section {
+    text-align: center;
+    padding: 5rem 2rem;
+    color: #6b7280;
+}
+
+.loader {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #f97316;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 1.2rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========== RESPONSIVE ========== */
+
+@media (max-width: 768px) {
+    .search-bar {
+        flex-direction: column;
+        border-radius: 16px;
+        padding: 0.8rem;
+        gap: 0;
+    }
+    .search-field {
+        width: 100%;
+        padding: 0.6rem 0.5rem;
+    }
+    .search-divider {
+        width: 100%;
+        height: 1px;
+    }
+    .find-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+        border-radius: 12px;
+    }
+    .filter-section {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .job-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+    }
+}

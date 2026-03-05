@@ -1,0 +1,192 @@
+/* ===========================
+   GOLEER-INSPIRED HEADER
+   =========================== */
+
+:host {
+    display: block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* --- Navbar --- */
+.navbar {
+    background: #1e1e2f;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: relative;
+    z-index: 100;
+}
+
+.navbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.9rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-logo {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.nav-logo-icon {
+    color: #f97316;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.nav-welcome {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    margin-right: 0.3rem;
+}
+
+.nav-btn {
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.3rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+.nav-btn-outline {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.nav-btn-outline:hover {
+    border-color: #f97316;
+    color: #f97316;
+}
+
+.nav-btn-primary {
+    background: #f97316;
+    color: #ffffff;
+}
+
+.nav-btn-primary:hover {
+    background: #ea580c;
+    transform: scale(1.03);
+}
+
+/* --- Hero --- */
+.hero {
+    position: relative;
+    background: #1e1e2f;
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    overflow: hidden;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(30,30,47,0.55) 0%, rgba(30,30,47,0.75) 100%);
+}
+
+.hero-content {
+    position: relative;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(249, 115, 22, 0.15);
+    color: #f97316;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 1.4rem;
+    border-radius: 50px;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 1.2rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.55);
+    margin: 0 auto 2.5rem;
+    max-width: 540px;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+/* --- Stats --- */
+.stats-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #f97316;
+    letter-spacing: -0.02em;
+}
+
+.stat-label {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .hero {
+        padding: 3.5rem 1.5rem 3rem;
+        min-height: 320px;
+    }
+    .hero-title {
+        font-size: 2rem;
+    }
+    .stats-row {
+        gap: 1rem;
+    }
+    .stat-number {
+        font-size: 1.4rem;
+    }
+}

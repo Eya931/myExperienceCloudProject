@@ -1,0 +1,155 @@
+/* ===========================
+   GOLEER-INSPIRED FOOTER
+   =========================== */
+
+:host {
+    display: block;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.footer {
+    background: #1e1e2f;
+    color: #ffffff;
+    margin-top: 0;
+}
+
+.footer-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 3.5rem 2rem 2rem;
+}
+
+.footer-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.footer-brand {
+    max-width: 280px;
+}
+
+.footer-logo {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 0 0.8rem;
+    color: #ffffff;
+    letter-spacing: -0.02em;
+}
+
+.logo-icon {
+    color: #f97316;
+}
+
+.footer-tagline {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
+    line-height: 1.7;
+}
+
+.footer-links {
+    display: flex;
+    gap: 3rem;
+    flex-wrap: wrap;
+}
+
+.footer-col {
+    min-width: 120px;
+}
+
+.footer-heading {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.9rem;
+    letter-spacing: 0.02em;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-list li {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0.35rem 0;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.footer-list li:hover {
+    color: #f97316;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.footer-auth {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.footer-btn {
+    border: none;
+    border-radius: 50px;
+    padding: 0.45rem 1.2rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+}
+
+.footer-btn-outline {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.footer-btn-outline:hover {
+    border-color: #f97316;
+    color: #f97316;
+}
+
+.footer-btn-primary {
+    background: #f97316;
+    color: #ffffff;
+}
+
+.footer-btn-primary:hover {
+    background: #ea580c;
+}
+
+.footer-copy,
+.footer-tech {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.25);
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .footer-top {
+        flex-direction: column;
+    }
+    .footer-links {
+        gap: 2rem;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+}

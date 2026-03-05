@@ -1,0 +1,89 @@
+<template>
+    <template if:true={visible}>
+        <div class="overlay" onclick={handleOverlayClick}>
+            <div class="modal" onclick={stopPropagation}>
+
+                <!-- Close button -->
+                <button class="close-btn" onclick={handleClose}>&times;</button>
+
+                <!-- ========== HEADER ========== -->
+                <div class="detail-header">
+                    <div class={avatarClass}>{initial}</div>
+                    <div class="header-info">
+                        <h1 class="detail-title">{job.Job_Title__c}</h1>
+                        <p class="detail-company">{job.Name}</p>
+                    </div>
+                </div>
+
+                <!-- ========== META PILLS ========== -->
+                <div class="detail-meta">
+                    <template if:true={job.Location__c}>
+                        <span class="detail-pill location-pill">
+                            <span class="pill-icon">&#128205;</span>{job.Location__c}
+                        </span>
+                    </template>
+                    <template if:true={job.Employment_Type__c}>
+                        <span class="detail-pill type-pill">
+                            <span class="pill-icon">&#128188;</span>{job.Employment_Type__c}
+                        </span>
+                    </template>
+                    <template if:true={job.formattedSalary}>
+                        <span class="detail-pill salary-pill">
+                            <span class="pill-icon">&#128176;</span>{job.formattedSalary}
+                        </span>
+                    </template>
+                    <template if:true={job.Experience_Level__c}>
+                        <span class="detail-pill exp-pill">
+                            <span class="pill-icon">&#127979;</span>{job.Experience_Level__c}
+                        </span>
+                    </template>
+                    <template if:true={job.Number_of_Openings__c}>
+                        <span class="detail-pill openings-pill">
+                            <span class="pill-icon">&#128101;</span>{job.Number_of_Openings__c} Opening(s)
+                        </span>
+                    </template>
+                </div>
+
+                <!-- ========== TAGS ========== -->
+                <template if:true={hasTags}>
+                    <div class="detail-tags">
+                        <template if:true={job.Department__c}>
+                            <span class="tag dept-tag">{job.Department__c}</span>
+                        </template>
+                        <template if:true={job.hasSkills}>
+                            <template for:each={job.skillsList} for:item="skill">
+                                <span key={skill.id} class="tag skill-tag">{skill.name}</span>
+                            </template>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- ========== DIVIDER ========== -->
+                <div class="detail-divider"></div>
+
+                <!-- ========== DESCRIPTION ========== -->
+                <div class="detail-section">
+                    <h2 class="section-label">Job Description</h2>
+                    <div class="description-body">{job.Job_Description__c}</div>
+                </div>
+
+                <!-- ========== POSTED ========== -->
+                <div class="posted-row">
+                    <span class="posted-label">&#128197; Posted {job.timeAgo}</span>
+                    <template if:true={job.Status__c}>
+                        <span class={statusClass}>{job.Status__c}</span>
+                    </template>
+                </div>
+
+                <!-- ========== APPLY ========== -->
+                <div class="apply-section">
+                    <button class="apply-btn" onclick={handleApply}>
+                        Apply Now &#8594;
+                    </button>
+                    <p class="apply-hint">Submit your application for this position</p>
+                </div>
+
+            </div>
+        </div>
+    </template>
+</template>

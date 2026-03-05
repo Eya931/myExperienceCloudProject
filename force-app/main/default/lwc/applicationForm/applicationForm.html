@@ -1,0 +1,147 @@
+<template>
+    <template if:true={visible}>
+        <div class="overlay" onclick={handleOverlayClick}>
+            <div class="modal" onclick={stopPropagation}>
+
+                <!-- Close button -->
+                <button class="close-btn" onclick={handleClose}>&times;</button>
+
+                <!-- ========== FORM VIEW ========== -->
+                <template if:false={submitted}>
+
+                    <!-- Header -->
+                    <div class="form-header">
+                        <div class="form-icon">&#128221;</div>
+                        <h1 class="form-title">Apply for this Position</h1>
+                        <p class="form-subtitle">{jobTitle}</p>
+                    </div>
+
+                    <!-- Form body -->
+                    <div class="form-body">
+
+                        <!-- Name row -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">First Name <span class="required">*</span></label>
+                                <input
+                                    id="firstName"
+                                    type="text"
+                                    class="form-input"
+                                    placeholder="John"
+                                    value={firstName}
+                                    onchange={handleFirstName}
+                                    maxlength="80"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">Last Name <span class="required">*</span></label>
+                                <input
+                                    id="lastName"
+                                    type="text"
+                                    class="form-input"
+                                    placeholder="Doe"
+                                    value={lastName}
+                                    onchange={handleLastName}
+                                    maxlength="80"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Contact row -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email <span class="required">*</span></label>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    class="form-input"
+                                    placeholder="john.doe@example.com"
+                                    value={email}
+                                    onchange={handleEmail}
+                                    maxlength="255"
+                                />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Phone</label>
+                                <input
+                                    id="phone"
+                                    type="tel"
+                                    class="form-input"
+                                    placeholder="+1 (555) 123-4567"
+                                    value={phone}
+                                    onchange={handlePhone}
+                                    maxlength="40"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- CV Upload -->
+                        <div class="form-group full-width">
+                            <label class="form-label">Upload CV / Resume <span class="required">*</span></label>
+                            <div class={dropZoneClass} ondragover={handleDragOver} ondragleave={handleDragLeave} ondrop={handleDrop}>
+                                <template if:false={cvFileName}>
+                                    <div class="drop-placeholder">
+                                        <span class="upload-icon">&#128196;</span>
+                                        <p class="drop-text">Drag &amp; drop your CV here or</p>
+                                        <button type="button" class="browse-btn" onclick={handleBrowse}>Browse Files</button>
+                                        <p class="file-hint">PDF, DOC, DOCX — Max 5 MB</p>
+                                    </div>
+                                </template>
+                                <template if:true={cvFileName}>
+                                    <div class="file-preview">
+                                        <span class="file-icon">&#128206;</span>
+                                        <span class="file-name">{cvFileName}</span>
+                                        <span class="file-size">{cvFileSize}</span>
+                                        <button type="button" class="remove-file" onclick={handleRemoveFile}>&times;</button>
+                                    </div>
+                                </template>
+                            </div>
+                            <input
+                                type="file"
+                                class="file-input"
+                                accept=".pdf,.doc,.docx,.txt"
+                                onchange={handleFileChange}
+                            />
+                        </div>
+
+                        <!-- Error message -->
+                        <template if:true={errorMessage}>
+                            <div class="error-msg">
+                                <span class="error-icon">&#9888;</span> {errorMessage}
+                            </div>
+                        </template>
+
+                        <!-- Submit -->
+                        <div class="submit-section">
+                            <button
+                                type="button"
+                                class="submit-btn"
+                                onclick={handleSubmit}
+                                disabled={isSubmitting}
+                            >
+                                <template if:false={isSubmitting}>Submit Application &#8594;</template>
+                                <template if:true={isSubmitting}>
+                                    <span class="spinner"></span> Submitting&hellip;
+                                </template>
+                            </button>
+                        </div>
+                    </div>
+
+                </template>
+
+                <!-- ========== SUCCESS VIEW ========== -->
+                <template if:true={submitted}>
+                    <div class="success-section">
+                        <div class="success-icon">&#9989;</div>
+                        <h2 class="success-title">Application Submitted!</h2>
+                        <p class="success-text">
+                            Thank you for applying. We will review your CV and get back to you shortly.
+                        </p>
+                        <button type="button" class="close-success-btn" onclick={handleClose}>Close</button>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+    </template>
+</template>

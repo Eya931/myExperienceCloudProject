@@ -1,0 +1,53 @@
+<template>
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <h3 class="footer-logo"><span class="logo-icon">&#9889;</span> Goleer</h3>
+                    <p class="footer-tagline">Empowering Job Seekers, One Career at a Time. Find the job that matches your passion and skills.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4 class="footer-heading">For Candidates</h4>
+                        <ul class="footer-list">
+                            <li>Browse Jobs</li>
+                            <li>Companies</li>
+                            <li>Salary Guide</li>
+                            <li>Career Advice</li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Company</h4>
+                        <ul class="footer-list">
+                            <li>About Us</li>
+                            <li>Blog</li>
+                            <li>Press</li>
+                            <li>Contact</li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-heading">Legal</h4>
+                        <ul class="footer-list">
+                            <li>Privacy Policy</li>
+                            <li>Terms of Use</li>
+                            <li>Cookie Policy</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copy">&copy; 2026 Goleer. All rights reserved.</p>
+                <div class="footer-auth">
+                    <template if:true={isGuest}>
+                        <button class="footer-btn footer-btn-outline" onclick={handleLogin}>Log In</button>
+                        <button class="footer-btn footer-btn-primary" onclick={handleRegister}>Sign Up</button>
+                    </template>
+                    <template if:false={isGuest}>
+                        <button class="footer-btn footer-btn-outline" onclick={handleLogout}>Log Out</button>
+                    </template>
+                </div>
+                <p class="footer-tech">Powered by Salesforce Experience Cloud</p>
+            </div>
+        </div>
+    </footer>
+</template>

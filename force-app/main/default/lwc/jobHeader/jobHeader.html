@@ -1,0 +1,46 @@
+<template>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <span class="nav-logo"><span class="nav-logo-icon">&#9889;</span> Goleer</span>
+            <div class="nav-actions">
+                <template if:true={isGuest}>
+                    <button class="nav-btn nav-btn-outline" onclick={handleLogin}>Log In</button>
+                    <button class="nav-btn nav-btn-primary" onclick={handleRegister}>Sign Up</button>
+                </template>
+                <template if:false={isGuest}>
+                    <span class="nav-welcome">Welcome back!</span>
+                    <button class="nav-btn nav-btn-outline" onclick={handleLogout}>Log Out</button>
+                </template>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero" lwc:ref="heroSection">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <span class="hero-badge">Where Ambition Meets Opportunity</span>
+            <h1 class="hero-title">Discover Opportunities,<br/>Achieve Your Dream Career.</h1>
+            <p class="hero-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+
+            <!-- Stats row -->
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-number">{totalJobs}+</span>
+                    <span class="stat-label">Open Positions</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">{totalDepartments}+</span>
+                    <span class="stat-label">Departments</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-number">{totalLocations}+</span>
+                    <span class="stat-label">Locations</span>
+                </div>
+            </div>
+        </div>
+    </section>
+</template>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Login Page</masterLabel>
+    <description>Custom login page for Experience Cloud with WTTJ-inspired design.</description>
+    <targets>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightning__AppPage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="forgotPasswordUrl" type="String" default="/ForgotPassword" label="Forgot Password URL" />
+            <property name="selfRegisterUrl" type="String" default="/SelfRegister" label="Self Register URL" />
+            <property name="startUrl" type="String" default="/" label="Start URL after login" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>
