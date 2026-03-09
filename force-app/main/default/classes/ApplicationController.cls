@@ -64,7 +64,7 @@ public without sharing class ApplicationController {
         insert cv;
 
         // ---- Enqueue asynchronous CV parsing & matching ----
-        /*System.enqueueJob(new CVParserService(newLead.Id, jobId));*/
+        System.enqueueJob(new CVParserService(newLead.Id, jobId));
 
         return newLead.Id;
     }
