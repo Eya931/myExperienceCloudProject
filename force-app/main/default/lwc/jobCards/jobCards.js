@@ -1,4 +1,4 @@
-import { LightningElement, wire, track } from 'lwc';
+import { LightningElement   , track } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getJobs from '@salesforce/apex/JobController.getJobs';
 
@@ -26,11 +26,13 @@ export default class JobCards extends NavigationMixin(LightningElement) {
     showApplicationForm = false;
     applicationJob = null;
 
-    /* --- Wire --- */
 
-    @wire(getJobs)
-    wiredJobs({ error, data }) {
-        if (data) {
+     connectedCallback() {
+        this.loadJobs();
+    }
+
+    loadJobs() {
+        getJobs().then(data => {
             this.allJobs = data.map((job, index) => {
                 const skillsList = job.Required_Skills__c
                     ? job.Required_Skills__c.split(',').map((s, i) => ({
@@ -69,18 +71,17 @@ export default class JobCards extends NavigationMixin(LightningElement) {
             });
             this.error = undefined;
             console.log("err");
-            
             this.applyFilters();
-        } else if (error) {
+        })
+        .catch(error => {
             this.error = error;
             console.log("this.error" + this.error);
             this.allJobs = undefined;
             this.displayedJobs = undefined;
-        }
+        });
     }
 
     /* --- Computed --- */
-
 
     get displayedCount() {
         return this.displayedJobs ? this.displayedJobs.length : 0;
@@ -119,6 +120,10 @@ export default class JobCards extends NavigationMixin(LightningElement) {
     }
 
     /* --- Handlers --- */
+
+    handleRefresh() {
+        this.loadJobs(); // simply call it again
+    }
 
     handleSearchInput(event) {
         this.searchTerm = event.target.value;
