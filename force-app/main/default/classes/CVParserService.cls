@@ -73,8 +73,8 @@ public without sharing class CVParserService implements Queueable, Database.Allo
             Lead lead = [SELECT Id, Description, Rating FROM Lead WHERE Id = :leadId LIMIT 1];
 
             if (aiSucceeded) {
-                lead.Rating = matchScore >= 70 ? 'Hot'
-                            : matchScore >= 40 ? 'Warm'
+                lead.Rating = matchScore >= 30 ? 'Hot'
+                            : matchScore >= 10 ? 'Warm'
                             : 'Cold';
             } else {
                 lead.Rating = FALLBACK_RATING;
@@ -85,7 +85,7 @@ public without sharing class CVParserService implements Queueable, Database.Allo
                 + (lead.Description != null ? lead.Description : '');
             update lead;
 
-            if (aiSucceeded && matchScore >= 70) {
+            if (aiSucceeded && matchScore >= 30) {
                 LeadConversionService.convertLead(leadId, jobId);
             }
 

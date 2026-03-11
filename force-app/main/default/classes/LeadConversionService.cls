@@ -17,11 +17,16 @@ public without sharing class LeadConversionService {
 
         // Fetch Lead info for the notification email
         Lead theLead = [
-            SELECT FirstName, LastName, Email, Rating, Description, OwnerId
+            SELECT FirstName, LastName, Email, Rating, Description, OwnerId, IsConverted
             FROM Lead
             WHERE Id = :leadId
             LIMIT 1
         ];
+
+        if(theLead.IsConverted){
+            System.debug('Lead already converted. Skipping.');
+            return;
+        }
 
         // Find the converted status value configured in the org
         LeadStatus convertedStatus = [
