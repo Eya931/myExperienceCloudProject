@@ -1,46 +1,139 @@
 <template>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="navbar-inner">
-            <span class="nav-logo"><span class="nav-logo-icon">&#9889;</span> Goleer</span>
-            <div class="nav-actions">
-                <template if:true={isGuest}>
-                    <button class="nav-btn nav-btn-outline" onclick={handleLogin}>Log In</button>
-                    <button class="nav-btn nav-btn-primary" onclick={handleRegister}>Sign Up</button>
+    <div class="page">
+
+        <!-- Section Header -->
+        <div class="section-header">
+            <span class="section-badge">LATEST OPENINGS</span>
+            <h2 class="section-title">Featured Job Offers</h2>
+            <p class="section-subtitle">Hand-picked opportunities from leading companies across every industry.</p>
+        </div>
+
+        <!-- Active filters banner -->
+        <template if:true={hasActiveFilters}>
+            <div class="active-filters-bar">
+                <span class="filter-label">Filtering by:</span>
+                <template if:true={searchTerm}>
+                    <span class="active-chip">&#128269; {searchTerm}
+                        <button class="chip-clear" data-filter="search" onclick={handleClearFilter}>&#10005;</button>
+                    </span>
                 </template>
-                <template if:false={isGuest}>
-                    <span class="nav-welcome">Welcome back!</span>
-                    <button class="nav-btn nav-btn-outline" onclick={handleLogout}>Log Out</button>
+                <template if:true={locationTerm}>
+                    <span class="active-chip">&#128205; {locationTerm}
+                        <button class="chip-clear" data-filter="location" onclick={handleClearFilter}>&#10005;</button>
+                    </span>
+                </template>
+                <template if:true={selectedType}>
+                    <span class="active-chip">&#128188; {selectedType}
+                        <button class="chip-clear" data-filter="type" onclick={handleClearFilter}>&#10005;</button>
+                    </span>
+                </template>
+                <button class="clear-all-btn" onclick={handleClearAll}>Clear all</button>
+            </div>
+        </template>
+
+        <!-- Filters -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <button class={allFilterClass} onclick={handleFilterAll}>All Jobs</button>
+                <template for:each={departmentFilters} for:item="dept">
+                    <button key={dept.name} class={dept.className} data-value={dept.name} onclick={handleFilterDepartment}>
+                        {dept.name}
+                    </button>
                 </template>
             </div>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <section class="hero" lwc:ref="heroSection">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <span class="hero-badge">Where Ambition Meets Opportunity</span>
-            <h1 class="hero-title">Discover Opportunities,<br/>Achieve Your Dream Career.</h1>
-            <p class="hero-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-
-            <!-- Stats row -->
-            <div class="stats-row">
-                <div class="stat-item">
-                    <span class="stat-number">{totalJobs}+</span>
-                    <span class="stat-label">Open Positions</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-number">{totalDepartments}+</span>
-                    <span class="stat-label">Departments</span>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-item">
-                    <span class="stat-number">{totalLocations}+</span>
-                    <span class="stat-label">Locations</span>
-                </div>
+            <div class="filter-right">
+                <span class="results-count"><strong>{displayedCount}</strong> jobs found</span>
+                <button class="refresh-btn" onclick={handleRefresh}>&#8635; Refresh</button>
             </div>
         </div>
-    </section>
+
+        <!-- Cards Grid -->
+        <div class="job-grid">
+            <template if:true={displayedJobs}>
+                <template for:each={displayedJobs} for:item="job">
+                    <div key={job.Id} class="card" data-id={job.Id} onclick={handleJobClick}>
+
+                        <!-- Card Top: avatar + company + location + type badge -->
+                        <div class="card-top">
+                            <div class={job.avatarClass}>{job.initial}</div>
+                            <div class="card-company-info">
+                                <p class="company-name">{job.Name}</p>
+                                <div class="company-meta">
+                                    <template if:true={job.Location__c}>
+                                        <span class="location-text">&#128205; {job.Location__c}</span>
+                                    </template>
+                                    <template if:true={job.Employment_Type__c}>
+                                        <span class={job.typeBadgeClass}>{job.Employment_Type__c}</span>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Title + Desc -->
+                        <h3 class="job-title">{job.Job_Title__c}</h3>
+                        <p class="job-desc">{job.descriptionPreview}</p>
+
+                        <!-- Skills -->
+                        <template if:true={job.hasSkills}>
+                            <div class="skills-row">
+                                <template for:each={job.skillsList} for:item="skill">
+                                    <span key={skill.id} class="skill-tag">{skill.name}</span>
+                                </template>
+                            </div>
+                        </template>
+
+                        <!-- Footer: salary + apply -->
+                        <div class="card-footer">
+                            <span class="salary-text">{job.salaryDisplay}</span>
+                            <button class="apply-btn">Apply Now &#8594;</button>
+                        </div>
+
+                    </div>
+                </template>
+            </template>
+
+            <!-- No results -->
+            <template if:true={noResults}>
+                <div class="empty-state">
+                    <div class="empty-icon">&#128269;</div>
+                    <h3>No matching jobs</h3>
+                    <p>Try different keywords or remove some filters</p>
+                </div>
+            </template>
+        </div>
+
+        <!-- Modals -->
+        <c-job-details
+            job={selectedJob}
+            visible={showDetail}
+            color-index={selectedColorIndex}
+            onclose={handleDetailClose}
+            onapply={handleApply}
+        ></c-job-details>
+
+        <c-application-form
+            job={applicationJob}
+            visible={showApplicationForm}
+            onclose={handleApplicationClose}
+        ></c-application-form>
+
+        <!-- Error -->
+        <template if:true={error}>
+            <div class="error-panel">
+                <h3>&#9888; Something went wrong</h3>
+                <p>Unable to load jobs. Please try again later.</p>
+            </div>
+        </template>
+
+        <!-- Loading -->
+        <template if:false={allJobs}>
+            <template if:false={error}>
+                <div class="loading-section">
+                    <div class="loader"></div>
+                    <p>Loading opportunities...</p>
+                </div>
+            </template>
+        </template>
+
+    </div>
 </template>

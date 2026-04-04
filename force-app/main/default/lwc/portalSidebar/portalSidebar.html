@@ -1,0 +1,43 @@
+<template>
+    <aside class={sidebarClass}>
+        <div class="brand-wrap">
+            <div class="brand-mark">TB</div>
+            <div class="brand-text">
+                <span class="brand-name">TalentBridge</span>
+                <span class="brand-sub">Candidate Portal</span>
+            </div>
+        </div>
+
+        <div class="profile-wrap">
+            <div class="avatar">{userInitials}</div>
+            <div class="profile-text">
+                <span class="user-name">{userName}</span>
+                <span class="user-role">Candidate</span>
+            </div>
+        </div>
+
+        <nav class="menu-wrap" aria-label="Portal sections">
+            <template for:each={displayItems} for:item="item">
+                <button
+                    key={item.id}
+                    class={item.className}
+                    data-id={item.id}
+                    onclick={handleSelect}
+                    type="button"
+                    title={item.label}
+                >
+                    <lightning-icon icon-name={item.icon} size="x-small" alternative-text={item.label}></lightning-icon>
+                    <span class="menu-label">{item.label}</span>
+                    <template if:true={item.badge}>
+                        <span class="menu-badge">{item.badge}</span>
+                    </template>
+                </button>
+            </template>
+        </nav>
+
+        <div class="foot-wrap">
+            <span>TalentBridge Portal</span>
+            <span>Build 2026</span>
+        </div>
+    </aside>
+</template>

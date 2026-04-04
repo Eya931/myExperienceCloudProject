@@ -1,0 +1,589 @@
+/* TalentBridge Hero - LWC Component Styles */
+
+/* --- Hero Container --- */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    font-family: 'DM Sans', sans-serif;
+    background: #0d0d14;
+}
+
+/* --- Slides --- */
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    will-change: opacity;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+/* Gradient overlay - rendered via .slide-overlay child div (LWC does not support ::after on custom elements) */
+.slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(8, 8, 20, 0.78) 0%,
+        rgba(8, 8, 24, 0.5) 55%,
+        rgba(0, 0, 0, 0.2) 100%
+    );
+}
+
+/* --- Navigation --- */
+.hero-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 28px 52px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -0.4px;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    background: #ff5c35;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.78);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #fff;
+}
+
+.nav-cta {
+    background: #ff5c35;
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 9px;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.nav-cta:hover {
+    background: #e04a25;
+    transform: translateY(-1px);
+}
+
+/* --- Hero Content --- */
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -54%);
+    z-index: 10;
+    text-align: center;
+    width: 90%;
+    max-width: 720px;
+    animation: fadeUp 0.9s ease both;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -54%);
+    }
+}
+
+.badge {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 12px;
+    font-weight: 400;
+    padding: 6px 16px;
+    border-radius: 24px;
+    margin-bottom: 22px;
+    letter-spacing: 0.6px;
+    backdrop-filter: blur(8px);
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 60px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+    margin: 0 0 18px;
+    letter-spacing: -0.5px;
+}
+
+.hero-sub {
+    font-size: 15.5px;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 300;
+    line-height: 1.65;
+    max-width: 500px;
+    margin: 0 auto 40px;
+}
+
+/* --- Search Bar --- */
+.search-bar {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    padding: 7px 7px 7px 20px;
+    gap: 4px;
+    max-width: 660px;
+    margin: 0 auto;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+}
+
+.s-field {
+    flex: 1.4;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    padding-right: 14px;
+    min-width: 0;
+}
+
+.s-field input {
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: #fff;
+    background: transparent;
+    width: 100%;
+}
+
+.s-field input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.s-select {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 0 14px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 0;
+}
+
+.s-select select {
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: rgba(255, 255, 255, 0.8);
+    background: transparent;
+    width: 100%;
+    cursor: pointer;
+}
+
+.s-select select option {
+    color: #333;
+    background: #fff;
+}
+
+.s-select.last {
+    border-right: none;
+}
+
+.find-btn {
+    background: #ff5c35;
+    color: #fff;
+    border: none;
+    padding: 13px 26px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.find-btn:hover {
+    background: #e04a25;
+    transform: translateY(-1px);
+}
+
+/* --- Stats Bar --- */
+.stats-bar {
+    position: absolute;
+    bottom: 68px;
+    right: 52px;
+    z-index: 10;
+    display: flex;
+    gap: 28px;
+}
+
+.stat {
+    text-align: right;
+}
+
+.stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 300;
+    letter-spacing: 0.5px;
+    margin-top: 3px;
+}
+
+/* --- Arrows --- */
+.arrows {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+}
+
+.arrow {
+    pointer-events: all;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    backdrop-filter: blur(8px);
+}
+
+.arrow:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* --- Dots --- */
+.dots {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 9px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s, transform 0.3s;
+    padding: 0;
+}
+
+.dot.active {
+    background: #ff5c35;
+    transform: scale(1.25);
+}
+
+/* --- Slide Label --- */
+.slide-label {
+    position: absolute;
+    bottom: 68px;
+    left: 52px;
+    z-index: 10;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .hero-nav {
+        padding: 20px 24px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .search-bar {
+        flex-wrap: wrap;
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .s-field,
+    .s-select {
+        border-right: none;
+        padding: 0;
+        flex: 1 1 100%;
+    }
+
+    .find-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-bar {
+        display: none;
+    }
+
+    .slide-label {
+        display: none;
+    }
+
+    .hero-title {
+        font-size: 38px;
+    }
+}
+
+/* --- Per-slide backgrounds ---
+   Replace these URLs with your Salesforce Static Resource URLs.
+   In JS renderedCallback(), you can also set these dynamically:
+   this.template.querySelector('.slide-0').style.backgroundImage = 'url(' + SLIDE1 + ')';
+*/
+.slide-0 {
+    background-image: url('');
+}
+
+.slide-1 {
+    background-image: url('');
+}
+
+.slide-2 {
+    background-image: url('');
+}
+
+/* --- Experience Cloud full-width / full-height override --- */
+:host {
+    display: block;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: 0;
+    padding-top: 0; 
+}
+
+.hero {
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
+}
+
+/* --- Nav auth buttons --- */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-welcome {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    margin-right: 4px;
+}
+
+.nav-btn-ghost {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    font-family: inherit;
+}
+
+.nav-btn-ghost:hover {
+    border-color: #ff5c35;
+    color: #ff5c35;
+}
+
+.nav-cta-outline {
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+}
+
+.nav-cta-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Nav links as buttons */
+.nav-link {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 6px 4px;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #ffffff;
+}
+
+/* --- Location input inside s-select (fix white background) --- */
+.s-select input {
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13.5px;
+    color: #fff;
+    background: transparent;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.s-select input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Autofill override — browsers force white bg on autofill */
+.s-select input:-webkit-autofill,
+.s-select input:-webkit-autofill:hover,
+.s-select input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px transparent inset;
+    -webkit-text-fill-color: #fff;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* --- Location suggestions dropdown --- */
+.location-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.location-suggestions {
+    position: absolute;
+    top: calc(100% + 14px);
+    left: -14px;
+    min-width: 220px;
+    background: rgba(18, 18, 30, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    z-index: 50;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.suggestion-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.suggestion-pin {
+    font-size: 13px;
+    flex-shrink: 0;
+    opacity: 0.6;
+}
+
+.suggestion-text {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400;
+}
+
+.suggestion-text strong {
+    color: #fff;
+    font-weight: 600;
+}

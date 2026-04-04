@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>JobFilter</masterLabel>
+    <isExposed>true</isExposed>
+    <description>Carries search filters from the hero header to the job cards component</description>
+    <lightningMessageFields>
+        <fieldName>searchTerm</fieldName>
+        <description>Position or keyword search</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>locationTerm</fieldName>
+        <description>Location filter</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>selectedType</fieldName>
+        <description>Employment type filter</description>
+    </lightningMessageFields>
+</LightningMessageChannel>

@@ -1,0 +1,35 @@
+<template>
+    <div class="applications">
+        <template for:each={applications} for:item="app">
+            <div key={app.id} class="pip-card">
+                <div class="pip-head">
+                    <div class="ph-r1"></div><div class="ph-tri"></div><div class="ph-dia"></div>
+                    <div class="pip-head-left">
+                        <div class="pip-icon">{app.initials}</div>
+                        <div>
+                            <div class="pip-role">{app.title}</div>
+                            <div class="pip-meta">{app.dept} · {app.location} · {app.salary}</div>
+                        </div>
+                    </div>
+                    <span class={app.badgeClass}>{app.stage}</span>
+                </div>
+                <div class="pip-body">
+                    <div class="stepper">
+                        <template for:each={app.steps} for:item="step">
+                            <template key={step.key}>
+                                <div class={step.circleClass}>{step.label}</div>
+                                <template if:false={step.isLast}>
+                                    <div class={step.lineClass}></div>
+                                </template>
+                            </template>
+                        </template>
+                    </div>
+                    <div class="pip-foot">
+                        <span class="pip-date">Applied {app.appliedDate} · {app.location}</span>
+                        <button class="pip-btn" data-id={app.id} onclick={viewDetails}>View details →</button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

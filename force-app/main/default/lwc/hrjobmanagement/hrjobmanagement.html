@@ -1,0 +1,115 @@
+<template>
+    <div class="job-mgmt">
+
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-header__title">Job Management</h1>
+                <p class="page-header__sub">{totalLabel}</p>
+            </div>
+            <div class="page-header__actions">
+                <div class="search-box">
+                    <span class="search-box__icon">🔍</span>
+                    <input
+                        type="text"
+                        class="search-box__input"
+                        placeholder="Search jobs..."
+                        value={searchTerm}
+                        onkeyup={handleSearch}
+                    />
+                </div>
+                <div class="filter-wrap">
+                    <select class="filter-select" onchange={handleStatusFilter}>
+                        <option value="">All Statuses</option>
+                        <option value="Active">Active</option>
+                        <option value="Draft">Draft</option>
+                        <option value="Reviewing">Reviewing</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                </div>
+                <div class="filter-wrap">
+                    <select class="filter-select" onchange={handleDeptFilter}>
+                        <option value="">All Departments</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Product">Product</option>
+                        <option value="Data">Data</option>
+                        <option value="Design">Design</option>
+                        <option value="Customer Success">Customer Success</option>
+                    </select>
+                </div>
+                <button class="btn btn--primary" onclick={handleCreateJob}>
+                    ✦ Create Job
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <template if:true={isLoading}>
+            <div class="job-list">
+                <div class="job-card job-card--skeleton"></div>
+                <div class="job-card job-card--skeleton"></div>
+                <div class="job-card job-card--skeleton"></div>
+            </div>
+        </template>
+
+        <!-- Job List -->
+        <template if:false={isLoading}>
+            <div class="job-list">
+                <template for:each={filteredJobs} for:item="job">
+                    <div key={job.id} class="job-card" onclick={handleJobClick} data-id={job.id}>
+
+                        <div class="job-card__icon">{job.deptIcon}</div>
+
+                        <div class="job-card__main">
+                            <div class="job-card__title-row">
+                                <h3 class="job-card__title">{job.title}</h3>
+                                <span class="status-badge" style={job.statusStyle}>{job.status}</span>
+                            </div>
+                            <p class="job-card__meta">
+                                {job.department} · 📍 {job.location} · 🕐 {job.type} · Posted {job.posted}
+                            </p>
+                            <div class="job-card__skills">
+                                <template for:each={job.skillList} for:item="skill">
+                                    <span key={skill} class="skill-tag">{skill}</span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="job-card__stats">
+                            <div class="job-stat">
+                                <span class="job-stat__value">{job.applicants}</span>
+                                <span class="job-stat__label">Applicants</span>
+                            </div>
+                        </div>
+
+                        <div class="job-card__actions" onclick={stopProp}>
+                            <button class="action-btn" data-id={job.id} onclick={handleView}
+                                title="View record">👁️</button>
+                            <button class="action-btn" data-id={job.id} onclick={handleEdit}
+                                title="Edit">✏️</button>
+                            <button
+                                class={job.toggleBtnClass}
+                                data-id={job.id}
+                                data-status={job.status}
+                                onclick={handleToggleStatus}
+                                title={job.toggleLabel}
+                            >{job.toggleLabel}</button>
+                        </div>
+
+                    </div>
+                </template>
+
+                <!-- Empty state -->
+                <template if:true={isEmpty}>
+                    <div class="empty-state">
+                        <span class="empty-state__icon">💼</span>
+                        <h3 class="empty-state__title">No jobs found</h3>
+                        <p class="empty-state__sub">Try adjusting your filters or create a new job posting</p>
+                        <button class="btn btn--primary" onclick={handleCreateJob}>✦ Create First Job</button>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+    </div>
+</template>

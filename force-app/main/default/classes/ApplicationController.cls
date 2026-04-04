@@ -49,7 +49,7 @@ public without sharing class ApplicationController {
             Phone      = String.isNotBlank(phone) ? phone.trim() : null,
             Company    = firstName.trim() + ' ' + lastName.trim(),
             LeadSource = 'Web',
-            Status     = 'New',
+            Status     = 'Candidat - Non contacté',
             Description = 'Applied for: ' + jobLabel + '\nJob ID: ' + jobId
         );
         insert newLead;
@@ -63,9 +63,14 @@ public without sharing class ApplicationController {
         );
         insert cv;
 
-        // ---- Enqueue asynchronous CV parsing & matching ----
-        System.enqueueJob(new CVParserService(newLead.Id, jobId));
+        System.debug('>>> START QUEUEABLE <<<');
+        System.debug('LeadId: ' + newLead.Id);
+        System.debug('JobId: ' + jobId);
 
+        CVParserService service = new CVParserService(newLead.Id, jobId);
+        System.debug('Service created: ' + service);
+
+        System.enqueueJob(service);
         return newLead.Id;
     }
 }

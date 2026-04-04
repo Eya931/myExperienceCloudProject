@@ -1,0 +1,22 @@
+.messages-layout { display:grid; grid-template-columns:280px 1fr; gap:14px; flex:1; min-height:500px; }
+.msg-list-panel { background:#fff; border-radius:14px; border:.5px solid #e8ecf2; overflow:hidden; display:flex; flex-direction:column; }
+.msg-search { padding:12px; border-bottom:1px solid #f2f4f8; display:flex; align-items:center; gap:8px; }
+.ms-input { border:none; outline:none; font-size:12px; color:#0d1117; font-family:inherit; flex:1; }
+.msg-items { flex:1; overflow-y:auto; }
+.msg-item { display:flex; gap:10px; padding:12px; border-bottom:.5px solid #f5f6f8; cursor:pointer; position:relative; }
+.msg-item.unread { background:#fffaf8; }
+.msg-item.unread::before { content:\'\'; position:absolute; left:0; top:0; bottom:0; width:3px; background:#e8470a; }
+.msg-item.selected { background:#f5f6f9; }
+.msg-av { width:32px; height:32px; border-radius:50%; background:#1a2235; color:#fff; font-size:11px; font-weight:500; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.msg-bd  { flex:1; min-width:0; }
+.msg-from { font-size:12px; font-weight:500; color:#0d1117; margin-bottom:2px; }
+.msg-subj { font-size:11px; color:#3d5068; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:1px; }
+.msg-prev { font-size:10px; color:#9aa5b4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.msg-time { font-size:9px; color:#9aa5b4; flex-shrink:0; padding-left:4px; }
+.msg-detail { background:#fff; border-radius:14px; border:.5px solid #e8ecf2; display:flex; flex-direction:column; }
+.md-header  { padding:16px 20px; border-bottom:1px solid #f2f4f8; }
+.md-subject { font-size:14px; font-weight:500; color:#0d1117; margin-bottom:6px; }
+.md-from    { font-size:11px; color:#9aa5b4; display:flex; align-items:center; gap:8px; }
+.md-av      { width:26px; height:26px; border-radius:50%; background:#1a2235; color:#fff; font-size:9px; font-weight:500; display:flex; align-items:center; justify-content:center; }
+.md-body    { padding:20px; font-size:13px; color:#3d5068; line-height:1.8; flex:1; }
+.md-empty   { display:flex; align-items:center; justify-content:center; flex:1; color:#9aa5b4; font-size:13px; }

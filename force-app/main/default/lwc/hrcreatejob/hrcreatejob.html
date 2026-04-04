@@ -1,0 +1,367 @@
+<template>
+    <div class="create-job">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-header__left">
+                <button class="back-btn" onclick={handleBack}>← Back</button>
+                <div>
+                    <h1 class="page-header__title">Create Job Offer</h1>
+                    <p class="page-header__sub">Enter basic details — AI generates the full description</p>
+                </div>
+            </div>
+            <!-- Step indicators -->
+            <div class="steps">
+                <template for:each={steps} for:item="step">
+                    <div key={step.id} class={step.cssClass}>
+                        <div class="step__circle">{step.label}</div>
+                        <span class="step__name">{step.name}</span>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- ─── STEP 1: Basic Info ─────────────────────────── -->
+        <template if:true={isStep1}>
+            <div class="form-grid fade-in">
+                <div class="form-col form-col--wide">
+
+                    <div class="card">
+                        <h2 class="card__title">Job Details</h2>
+                        <p class="card__sub">These 4 fields are all the AI needs to generate the full posting</p>
+
+                        <div class="form-row">
+                            <div class="field field--full">
+                                <label class="field__label">Job Title <span class="required">*</span></label>
+                                <div class="field__input-wrap">
+                                    <input
+                                        type="text"
+                                        class={titleClass}
+                                        placeholder="e.g. Senior React Developer"
+                                        value={formData.title}
+                                        data-field="title"
+                                        onchange={handleFieldChange}
+                                        oninput={handleFieldChange}
+                                    />
+                                </div>
+                                <template if:true={titleError}>
+                                    <span class="field__error">Job title is required</span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="field">
+                                <label class="field__label">Department <span class="required">*</span></label>
+                                <div class="field__select-wrap">
+                                    <select class={deptClass} data-field="department" onchange={handleFieldChange}>
+                                        <option value="">Select department...</option>
+                                        <option value="Engineering">Engineering</option>
+                                        <option value="Product">Product</option>
+                                        <option value="Data">Data &amp; Analytics</option>
+                                        <option value="Design">Design</option>
+                                        <option value="Customer Success">Customer Success</option>
+                                        <option value="Marketing">Marketing</option>
+                                        <option value="Sales">Sales</option>
+                                    </select>
+                                    <span class="field__select-arrow">▾</span>
+                                </div>
+                                <template if:true={deptError}>
+                                    <span class="field__error">Department is required</span>
+                                </template>
+                            </div>
+
+                            <div class="field">
+                                <label class="field__label">Experience Level</label>
+                                <div class="field__select-wrap">
+                                    <select class="field__select" data-field="experienceLevel" onchange={handleFieldChange}>
+                                        <option value="">Select level...</option>
+                                        <option value="Junior">Junior</option>
+                                        <option value="Mid-Level">Mid-Level</option>
+                                        <option value="Senior">Senior</option>
+                                        <option value="Lead">Lead</option>
+                                        <option value="Principal">Principal</option>
+                                    </select>
+                                    <span class="field__select-arrow">▾</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="field field--full">
+                                <label class="field__label">Required Skills <span class="required">*</span></label>
+                                <input
+                                    type="text"
+                                    class={skillsClass}
+                                    placeholder="e.g. React, TypeScript, GraphQL, AWS — separate with commas"
+                                    value={formData.skills}
+                                    data-field="skills"
+                                    onchange={handleFieldChange}
+                                    oninput={handleSkillsInput}
+                                />
+                                <!-- Skill Tags Preview -->
+                                <template if:true={hasSkillTags}>
+                                    <div class="skill-tags">
+                                        <template for:each={skillTags} for:item="skill">
+                                            <span key={skill} class="skill-tag">{skill}</span>
+                                        </template>
+                                    </div>
+                                </template>
+                                <template if:true={skillsError}>
+                                    <span class="field__error">At least one skill is required</span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="field">
+                                <label class="field__label">Contact Email <span class="required">*</span></label>
+                                <div class="field__input-wrap field__input-wrap--icon">
+                                    <span class="field__icon">📧</span>
+                                    <input
+                                        type="email"
+                                        class={emailClass}
+                                        placeholder="hiring@company.com"
+                                        value={formData.email}
+                                        data-field="email"
+                                        onchange={handleFieldChange}
+                                        oninput={handleFieldChange}
+                                    />
+                                </div>
+                                <template if:true={emailError}>
+                                    <span class="field__error">Valid email is required</span>
+                                </template>
+                            </div>
+
+                            <div class="field">
+                                <label class="field__label">Salary Range (optional)</label>
+                                <div class="field__input-wrap field__input-wrap--icon">
+                                    <span class="field__icon">💶</span>
+                                    <input
+                                        type="text"
+                                        class="field__input"
+                                        placeholder="e.g. 60–80k €"
+                                        value={formData.salary}
+                                        data-field="salary"
+                                        onchange={handleFieldChange}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="field">
+                                <label class="field__label">Location</label>
+                                <div class="field__select-wrap">
+                                    <select class="field__select" data-field="location" onchange={handleFieldChange}>
+                                        <option value="">Select location...</option>
+                                        <option value="Remote">🌍 Remote</option>
+                                        <option value="Paris, France">🇫🇷 Paris, France</option>
+                                        <option value="London, UK">🇬🇧 London, UK</option>
+                                        <option value="Berlin, Germany">🇩🇪 Berlin, Germany</option>
+                                        <option value="Amsterdam, Netherlands">🇳🇱 Amsterdam, Netherlands</option>
+                                        <option value="Barcelona, Spain">🇪🇸 Barcelona, Spain</option>
+                                    </select>
+                                    <span class="field__select-arrow">▾</span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="field__label">Employment Type</label>
+                                <div class="field__select-wrap">
+                                    <select class="field__select" data-field="employmentType" onchange={handleFieldChange}>
+                                        <option value="Full-time">Full-time</option>
+                                        <option value="Part-time">Part-time</option>
+                                        <option value="Contract">Contract</option>
+                                        <option value="Internship">Internship</option>
+                                    </select>
+                                    <span class="field__select-arrow">▾</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- AI Info Banner -->
+                    <div class="ai-banner">
+                        <div class="ai-banner__icon">🤖</div>
+                        <div class="ai-banner__body">
+                            <p class="ai-banner__title">AI will automatically generate</p>
+                            <div class="ai-banner__items">
+                                <span class="ai-banner__item">✦ Full job description</span>
+                                <span class="ai-banner__item">✦ Responsibilities list</span>
+                                <span class="ai-banner__item">✦ Requirements list</span>
+                                <span class="ai-banner__item">✦ SEO keywords</span>
+                            </div>
+                        </div>
+                        <div class="ai-banner__badge">Powered by Einstein AI</div>
+                    </div>
+
+                    <!-- CTA -->
+                    <button
+                        class={generateBtnClass}
+                        onclick={handleGenerate}
+                        disabled={isGenerating}
+                    >
+                        <template if:false={isGenerating}>
+                            <span class="generate-btn__icon">✨</span>
+                            Generate Job Description with AI
+                        </template>
+                        <template if:true={isGenerating}>
+                            <div class="spinner"></div>
+                            Generating with AI...
+                        </template>
+                    </button>
+
+                </div>
+
+                <!-- Right: Preview card -->
+                <div class="form-col form-col--narrow">
+                    <div class="preview-card">
+                        <div class="preview-card__header">
+                            <span class="preview-card__tag">Live Preview</span>
+                        </div>
+                        <div class="preview-card__dept-icon">{deptIcon}</div>
+                        <h3 class="preview-card__title">{previewTitle}</h3>
+                        <p class="preview-card__dept">{previewDept}</p>
+                        <div class="preview-card__meta">
+                            <template if:true={formData.location}>
+                                <span>📍 {formData.location}</span>
+                            </template>
+                            <template if:true={formData.salary}>
+                                <span>💶 {formData.salary}</span>
+                            </template>
+                            <template if:true={formData.employmentType}>
+                                <span>🕐 {formData.employmentType}</span>
+                            </template>
+                        </div>
+                        <template if:true={hasSkillTags}>
+                            <div class="preview-card__skills">
+                                <template for:each={skillTags} for:item="skill">
+                                    <span key={skill} class="skill-tag">{skill}</span>
+                                </template>
+                            </div>
+                        </template>
+                        <div class="preview-card__placeholder">
+                            <template if:false={isGenerated}>
+                                <div class="placeholder-line"></div>
+                                <div class="placeholder-line placeholder-line--short"></div>
+                                <div class="placeholder-line"></div>
+                                <p class="preview-card__hint">Description will appear after AI generation</p>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ─── STEP 2: AI Preview & Edit ─────────────────── -->
+        <template if:true={isStep2}>
+            <div class="fade-in">
+
+                <!-- Success banner -->
+                <div class="success-banner">
+                    <span>✅</span>
+                    <p>AI has generated your job description. Review and edit before publishing.</p>
+                    <button class="success-banner__regenerate" onclick={handleRegenerate}>↺ Regenerate</button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-col form-col--wide">
+
+                        <div class="card">
+                            <div class="card__title-row">
+                                <h2 class="card__title">{formData.title}</h2>
+                                <span class="ai-badge">AI Generated ✦</span>
+                            </div>
+                            <p class="card__sub">{formData.department} · {formData.location} · {formData.employmentType}</p>
+
+                            <div class="generated-section">
+                                <label class="field__label">Job Description</label>
+                                <textarea
+                                    class="field__textarea"
+                                    rows="5"
+                                    value={aiContent.description}
+                                    data-field="description"
+                                    onchange={handleAiContentChange}
+                                ></textarea>
+                            </div>
+
+                            <div class="generated-section">
+                                <label class="field__label">Responsibilities</label>
+                                <textarea
+                                    class="field__textarea field__textarea--mono"
+                                    rows="7"
+                                    value={aiContent.responsibilities}
+                                    data-field="responsibilities"
+                                    onchange={handleAiContentChange}
+                                ></textarea>
+                            </div>
+
+                            <div class="generated-section">
+                                <label class="field__label">Requirements</label>
+                                <textarea
+                                    class="field__textarea field__textarea--mono"
+                                    rows="6"
+                                    value={aiContent.requirements}
+                                    data-field="requirements"
+                                    onchange={handleAiContentChange}
+                                ></textarea>
+                            </div>
+
+                            <div class="step2-actions">
+                                <button class="btn btn--secondary" onclick={handleBackToStep1}>← Edit Details</button>
+                                <button class="btn btn--primary" onclick={handlePublish}>
+                                    <template if:false={isSaving}>Publish Job Offer →</template>
+                                    <template if:true={isSaving}>
+                                        <div class="spinner spinner--white"></div> Saving...
+                                    </template>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-col form-col--narrow">
+                        <div class="preview-card">
+                            <h3 class="field__label" style="margin-bottom: 12px">Summary</h3>
+                            <div class="summary-row"><span>Title</span><strong>{formData.title}</strong></div>
+                            <div class="summary-row"><span>Department</span><strong>{formData.department}</strong></div>
+                            <div class="summary-row"><span>Location</span><strong>{formData.location}</strong></div>
+                            <div class="summary-row"><span>Level</span><strong>{formData.experienceLevel}</strong></div>
+                            <div class="summary-row"><span>Type</span><strong>{formData.employmentType}</strong></div>
+                            <template if:true={formData.salary}>
+                                <div class="summary-row"><span>Salary</span><strong>{formData.salary}</strong></div>
+                            </template>
+                            <div class="summary-row"><span>Contact</span><strong>{formData.email}</strong></div>
+                            <div class="summary-divider"></div>
+                            <p class="field__label" style="margin-bottom: 8px">Skills</p>
+                            <div class="preview-card__skills">
+                                <template for:each={skillTags} for:item="skill">
+                                    <span key={skill} class="skill-tag">{skill}</span>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ─── STEP 3: Success ───────────────────────────── -->
+        <template if:true={isStep3}>
+            <div class="success-page fade-in">
+                <div class="success-page__icon">🎉</div>
+                <h2 class="success-page__title">Job Offer Published!</h2>
+                <p class="success-page__desc">
+                    <strong>{formData.title}</strong> is now live and accepting applications.
+                    Our AI will automatically score and rank incoming candidates.
+                </p>
+                <div class="success-page__actions">
+                    <button class="btn btn--secondary" onclick={handleViewJob}>View Job Posting</button>
+                    <button class="btn btn--primary" onclick={handleCreateAnother}>✦ Create Another</button>
+                </div>
+            </div>
+        </template>
+
+    </div>
+</template>

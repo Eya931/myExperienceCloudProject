@@ -1,0 +1,49 @@
+<template>
+    <div class="search-page">
+        <div class="search-bar">
+            <div class="sb-field">
+                <lightning-icon icon-name="utility:search" size="x-small" alternative-text="Search"></lightning-icon>
+                <input type="text" placeholder="Search Position, Title..." class="sb-input" onchange={handleSearch}/>
+            </div>
+            <div class="sb-field">
+                <lightning-icon icon-name="utility:location" size="x-small" alternative-text="Location"></lightning-icon>
+                <input type="text" placeholder="Location" class="sb-input" onchange={handleLocation}/>
+            </div>
+            <div class="sb-field">
+                <lightning-icon icon-name="utility:filter" size="x-small" alternative-text="Type"></lightning-icon>
+                <select class="sb-select" onchange={handleType}>
+                    <option value="">Job Type</option>
+                    <option value="Full-time">Full-time</option>
+                    <option value="Part-time">Part-time</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Contract">Contract</option>
+                </select>
+            </div>
+            <button class="btn-find" onclick={search}>Find Now →</button>
+        </div>
+        <div class="filters">
+            <template for:each={departmentFilters} for:item="dept">
+                <div key={dept.name} class={dept.cssClass} data-dept={dept.name} onclick={filterByDept}>{dept.name}</div>
+            </template>
+            <span class="results-count">{filteredJobs.length} jobs found</span>
+        </div>
+        <div class="job-grid">
+            <template for:each={filteredJobs} for:item="job">
+                <div key={job.id} class="job-card">
+                    <div class="jc-dept">{job.dept}</div>
+                    <div class="jc-title">{job.title}</div>
+                    <div class="jc-tags">
+                        <span class="jc-tag">{job.type}</span>
+                        <span class="jc-tag">{job.location}</span>
+                        <span class="jc-tag">{job.exp}</span>
+                    </div>
+                    <div class="jc-salary">{job.salary}</div>
+                    <div class="jc-footer">
+                        <span class="jc-posted">{job.posted}</span>
+                        <button class="jc-apply" data-id={job.id} onclick={applyNow}>Apply →</button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

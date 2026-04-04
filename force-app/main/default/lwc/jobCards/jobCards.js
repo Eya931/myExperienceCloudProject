@@ -1,4 +1,4 @@
-import { LightningElement   , track } from 'lwc';
+import { LightningElement, track } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getJobs from '@salesforce/apex/JobController.getJobs';
 
@@ -7,236 +7,210 @@ const AVATAR_COLORS = [
     'avatar-orange', 'avatar-green', 'avatar-teal'
 ];
 
-const ACCENT_CLASSES = [
-    'accent-yellow', 'accent-coral', 'accent-blue',
-    'accent-green', 'accent-purple', 'accent-teal'
-];
+const TYPE_BADGE = {
+    'Full-time':  'badge-blue',
+    'Part-time':  'badge-orange',
+    'Contract':   'badge-green',
+    'Remote':     'badge-teal',
+    'Internship': 'badge-purple',
+    'Freelance':  'badge-yellow',
+};
 
 export default class JobCards extends NavigationMixin(LightningElement) {
     @track allJobs;
     @track displayedJobs;
     error;
-    searchTerm = '';
-    locationTerm = '';
-    selectedDepartment = '';
-    selectedType = '';
-    selectedJob = null;
-    showDetail = false;
-    selectedColorIndex = 0;
+
+    @track searchTerm         = '';
+    @track locationTerm       = '';
+    @track selectedDepartment = '';
+    @track selectedType       = '';
+
+    selectedJob         = null;
+    showDetail          = false;
+    selectedColorIndex  = 0;
     showApplicationForm = false;
-    applicationJob = null;
+    applicationJob      = null;
 
+    _lastTs        = 0;
+    _pollInterval  = null;
 
-     connectedCallback() {
+    // ─────────────────────────────────────────────
+    // Lifecycle
+    // ─────────────────────────────────────────────
+    connectedCallback() {
         this.loadJobs();
+        this._readStoredFilters(); // apply on first load
     }
 
+    renderedCallback() {
+        // Start polling after first render — 100ms feels instant
+        if (!this._pollInterval) {
+            this._pollInterval = setInterval(() => {
+                this._checkFilters();
+            }, 100);
+        }
+    }
+
+    disconnectedCallback() {
+        if (this._pollInterval) {
+            clearInterval(this._pollInterval);
+            this._pollInterval = null;
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    // Poll localStorage for new filters from hero
+    // ─────────────────────────────────────────────
+    _checkFilters() {
+        try {
+            const raw = localStorage.getItem('tbFilters');
+            if (!raw) return;
+            const f = JSON.parse(raw);
+            // Only react when hero writes a new timestamp
+            if (!f.ts || f.ts === this._lastTs) return;
+            this._lastTs      = f.ts;
+            this.searchTerm   = f.search   || '';
+            this.locationTerm = f.location || '';
+            this.selectedType = f.type     || '';
+            this.applyFilters();
+        } catch(e) { /* localStorage unavailable */ }
+    }
+
+    _readStoredFilters() {
+        try {
+            const raw = localStorage.getItem('tbFilters');
+            if (!raw) return;
+            const f = JSON.parse(raw);
+            if (f.ts) this._lastTs = f.ts; // mark as seen
+            if (f.search)   this.searchTerm   = f.search;
+            if (f.location) this.locationTerm = f.location;
+            if (f.type)     this.selectedType = f.type;
+        } catch(e) { /* unavailable */ }
+    }
+
+    // ─────────────────────────────────────────────
+    // Data
+    // ─────────────────────────────────────────────
     loadJobs() {
         getJobs().then(data => {
             this.allJobs = data.map((job, index) => {
                 const skillsList = job.Required_Skills__c
                     ? job.Required_Skills__c.split(',').map((s, i) => ({
-                          id: `${job.Id}-skill-${i}`,
-                          name: s.trim()
+                          id: `${job.Id}-s${i}`, name: s.trim()
                       }))
                     : [];
-
-                const timeAgo = this.getTimeAgo(job.CreatedDate);
-                const initial = job.Name ? job.Name.charAt(0).toUpperCase() : '?';
-                const avatarClass = `avatar ${AVATAR_COLORS[index % AVATAR_COLORS.length]}`;
-                const accentClass = `accent ${ACCENT_CLASSES[index % ACCENT_CLASSES.length]}`;
-
                 const formattedSalary = job.Currency__c == null
-                    ? ''
-                    : this.formatCurrency(job.Currency__c);
-
-                let descriptionPreview = '';
-                if (job.Job_Description__c) {
-                    const truncated = job.Job_Description__c.substring(0, 120);
-                    const ellipsis = job.Job_Description__c.length > 120 ? '…' : '';
-                    descriptionPreview = truncated + ellipsis;
-                }
-
+                    ? '' : this.formatCurrency(job.Currency__c);
                 return {
-                    ...job,
-                    skillsList,
-                    hasSkills: skillsList.length > 0,
-                    timeAgo,
-                    initial,
-                    avatarClass,
-                    accentClass,
+                    ...job, skillsList,
+                    hasSkills:      skillsList.length > 0,
+                    timeAgo:        this.getTimeAgo(job.CreatedDate),
+                    initial:        (job.Name || '?').charAt(0).toUpperCase(),
+                    avatarClass:    `avatar ${AVATAR_COLORS[index % AVATAR_COLORS.length]}`,
+                    typeBadgeClass: 'type-badge ' + (TYPE_BADGE[job.Employment_Type__c] || 'badge-green'),
                     formattedSalary,
-                    descriptionPreview
+                    salaryDisplay:  formattedSalary || this.getTimeAgo(job.CreatedDate),
+                    descriptionPreview: job.Job_Description__c
+                        ? job.Job_Description__c.substring(0, 130) + (job.Job_Description__c.length > 130 ? '…' : '')
+                        : '',
                 };
             });
             this.error = undefined;
-            console.log("err");
             this.applyFilters();
         })
-        .catch(error => {
-            this.error = error;
-            console.log("this.error" + this.error);
-            this.allJobs = undefined;
-            this.displayedJobs = undefined;
+        .catch(err => {
+            this.error = err;
+            this.allJobs = this.displayedJobs = undefined;
         });
     }
 
-    /* --- Computed --- */
-
-    get displayedCount() {
-        return this.displayedJobs ? this.displayedJobs.length : 0;
-    }
-
-    get departmentFilters() {
-        if (!this.allJobs) return [];
-        const depts = [...new Set(this.allJobs.map(j => j.Department__c).filter(Boolean))];
-        return depts.map(d => ({
-            name: d,
-            className: this.selectedDepartment === d ? 'filter-btn active' : 'filter-btn'
-        }));
-    }
-
-    get typeFilters() {
-        if (!this.allJobs) return [];
-        const types = [...new Set(this.allJobs.map(j => j.Employment_Type__c).filter(Boolean))];
-        return types.map(t => ({
-            name: t,
-            className: this.selectedType === t ? 'filter-btn type-btn active' : 'filter-btn type-btn'
-        }));
-    }
-
-    get typeOptions() {
-        if (!this.allJobs) return [];
-        return [...new Set(this.allJobs.map(j => j.Employment_Type__c).filter(Boolean))];
-    }
-
-    get allFilterClass() {
-        return this.selectedDepartment === '' ? 'filter-btn active' : 'filter-btn';
-    }
-
-    get noResults() {
-        if (!this.allJobs || !this.displayedJobs) return false;
-        return this.displayedJobs.length === 0;
-    }
-
-    /* --- Handlers --- */
-
-    handleRefresh() {
-        this.loadJobs(); // simply call it again
-    }
-
-    handleSearchInput(event) {
-        this.searchTerm = event.target.value;
-        this.applyFilters();
-    }
-
-    handleLocationInput(event) {
-        this.locationTerm = event.target.value;
-        this.applyFilters();
-    }
-
-    handleTypeSelect(event) {
-        this.selectedType = event.target.value;
-        this.applyFilters();
-    }
-
-    handleFindNow() {
-        this.applyFilters();
-    }
-
-    handleFilterAll() {
-        this.selectedDepartment = '';
-        this.applyFilters();
-    }
-
-    handleFilterDepartment(event) {
-        const val = event.currentTarget.dataset.value;
-        this.selectedDepartment = this.selectedDepartment === val ? '' : val;
-        this.applyFilters();
-    }
-
-    handleFilterType(event) {
-        const val = event.currentTarget.dataset.value;
-        this.selectedType = this.selectedType === val ? '' : val;
-        this.applyFilters();
-    }
-
+    // ─────────────────────────────────────────────
+    // Core filter
+    // ─────────────────────────────────────────────
     applyFilters() {
         if (!this.allJobs) return;
-        const term = this.searchTerm.toLowerCase();
-        const locTerm = this.locationTerm.toLowerCase();
+        const term    = (this.searchTerm   || '').toLowerCase().trim();
+        const locTerm = (this.locationTerm || '').toLowerCase().trim();
+        const type    = (this.selectedType || '').toLowerCase().trim();
+        const dept    = this.selectedDepartment || '';
 
         this.displayedJobs = this.allJobs.filter(job => {
-            const searchFields = [
-                job.Job_Title__c, job.Required_Skills__c,
-                job.Name, job.Department__c
-            ];
-            const matchesSearch = term === '' ||
-                searchFields.filter(Boolean).some(f => f.toLowerCase().includes(term));
-
-            const locationLower = job.Location__c?.toLowerCase() ?? '';
-            const matchesLocation = locTerm === '' || locationLower.includes(locTerm);
-
-            const matchesDept = this.selectedDepartment === '' ||
-                job.Department__c === this.selectedDepartment;
-
-            const matchesType = this.selectedType === '' ||
-                job.Employment_Type__c === this.selectedType;
-
+            const matchesSearch   = !term    || [job.Job_Title__c, job.Required_Skills__c, job.Name, job.Department__c].filter(Boolean).some(f => f.toLowerCase().includes(term));
+            const matchesLocation = !locTerm || (job.Location__c || '').toLowerCase().includes(locTerm);
+            const matchesDept     = !dept    || job.Department__c === dept;
+            const matchesType     = !type    || (job.Employment_Type__c || '').toLowerCase().includes(type);
             return matchesSearch && matchesLocation && matchesDept && matchesType;
         });
     }
 
-    handleJobClick(event) {
-        const jobId = event.currentTarget.dataset.id;
-        if (this.allJobs) {
-            const idx = this.allJobs.findIndex(j => j.Id === jobId);
-            if (idx !== -1) {
-                this.selectedJob = this.allJobs[idx];
-                this.selectedColorIndex = idx;
-                this.showDetail = true;
-            }
-        }
+    // ─────────────────────────────────────────────
+    // Computed
+    // ─────────────────────────────────────────────
+    get displayedCount()   { return this.displayedJobs ? this.displayedJobs.length : 0; }
+    get hasActiveFilters() { return !!(this.searchTerm || this.locationTerm || this.selectedType); }
+    get noResults()        { return !!(this.allJobs && this.displayedJobs && !this.displayedJobs.length); }
+
+    get departmentFilters() {
+        if (!this.allJobs) return [];
+        return [...new Set(this.allJobs.map(j => j.Department__c).filter(Boolean))]
+            .map(d => ({ name: d, className: `filter-btn${this.selectedDepartment === d ? ' active' : ''}` }));
     }
 
-    handleDetailClose() {
-        this.showDetail = false;
-        this.selectedJob = null;
+    get allFilterClass() {
+        return `filter-btn${this.selectedDepartment === '' ? ' active' : ''}`;
     }
 
-    handleApply(event) {
-        const jobId = event.detail?.jobId;
-        this.applicationJob = this.allJobs?.find(j => j.Id === jobId) || this.selectedJob;
-        this.showDetail = false;
+    // ─────────────────────────────────────────────
+    // Handlers
+    // ─────────────────────────────────────────────
+    handleFilterAll()  { this.selectedDepartment = ''; this.applyFilters(); }
+    handleRefresh()    { this.loadJobs(); }
+
+    handleFilterDepartment(e) {
+        const v = e.currentTarget.dataset.value;
+        this.selectedDepartment = this.selectedDepartment === v ? '' : v;
+        this.applyFilters();
+    }
+
+    handleClearFilter(e) {
+        const f = e.currentTarget.dataset.filter;
+        if (f === 'search')   this.searchTerm   = '';
+        if (f === 'location') this.locationTerm = '';
+        if (f === 'type')     this.selectedType = '';
+        try { localStorage.removeItem('tbFilters'); } catch(err) { /* ignore */ }
+        this.applyFilters();
+    }
+
+    handleClearAll() {
+        this.searchTerm = this.locationTerm = this.selectedType = '';
+        this.selectedDepartment = '';
+        try { localStorage.removeItem('tbFilters'); } catch(err) { /* ignore */ }
+        this.applyFilters();
+    }
+
+    handleJobClick(e) {
+        const idx = this.allJobs?.findIndex(j => j.Id === e.currentTarget.dataset.id) ?? -1;
+        if (idx !== -1) { this.selectedJob = this.allJobs[idx]; this.selectedColorIndex = idx; this.showDetail = true; }
+    }
+
+    handleDetailClose()      { this.showDetail = false; this.selectedJob = null; }
+    handleApplicationClose() { this.showApplicationForm = false; this.applicationJob = null; }
+
+    handleApply(e) {
+        this.applicationJob      = this.allJobs?.find(j => j.Id === e.detail?.jobId) || this.selectedJob;
+        this.showDetail          = false;
         this.showApplicationForm = true;
     }
 
-    handleApplicationClose() {
-        this.showApplicationForm = false;
-        this.applicationJob = null;
-    }
+    formatCurrency(v) { return v >= 1000 ? `$${Math.round(v / 1000)}k` : `$${v}`; }
 
-    /* --- Utilities --- */
-
-    formatCurrency(value) {
-        if (value >= 1000) {
-            return `$${Math.round(value / 1000)}k`;
-        }
-        return `$${value}`;
-    }
-
-    getTimeAgo(dateString) {
-        const now = new Date();
-        const date = new Date(dateString);
-        const diffMs = now - date;
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-        if (diffDays < 1) return 'Today';
-        if (diffDays === 1) return '1d ago';
-        if (diffDays < 7) return `${diffDays}d ago`;
-        const weeks = Math.floor(diffDays / 7);
-        if (weeks < 5) return `${weeks}w ago`;
-        const months = Math.floor(diffDays / 30);
-        return `${months}mo ago`;
+    getTimeAgo(ds) {
+        const d = Math.floor((Date.now() - new Date(ds)) / 86400000);
+        if (d < 1) return 'Today';
+        if (d === 1) return '1d ago';
+        if (d < 7) return `${d}d ago`;
+        const w = Math.floor(d / 7);
+        return w < 5 ? `${w}w ago` : `${Math.floor(d / 30)}mo ago`;
     }
 }

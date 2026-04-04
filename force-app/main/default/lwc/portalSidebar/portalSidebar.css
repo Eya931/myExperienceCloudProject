@@ -1,0 +1,193 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.portal-sidebar {
+    --brand: #ff5a2b;
+    --ink: #f6f7fb;
+    --muted: #95a2b8;
+    width: 290px;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 18% 14%, rgba(255, 90, 43, 0.22), transparent 28%),
+        radial-gradient(circle at 75% 4%, rgba(82, 138, 255, 0.2), transparent 30%),
+        linear-gradient(170deg, #111827 0%, #0a1020 65%, #141b2b 100%);
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    transition: width 0.25s ease;
+}
+
+.portal-sidebar.is-collapsed {
+    width: 88px;
+}
+
+.portal-sidebar.is-collapsed .brand-text,
+.portal-sidebar.is-collapsed .profile-text,
+.portal-sidebar.is-collapsed .menu-label,
+.portal-sidebar.is-collapsed .menu-badge,
+.portal-sidebar.is-collapsed .foot-wrap {
+    display: none;
+}
+
+.brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 20px 18px;
+}
+
+.brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ffd57a, var(--brand));
+    color: #191d2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.brand-sub {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.profile-wrap {
+    margin: 8px 16px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(82, 138, 255, 0.95), rgba(255, 90, 43, 0.95));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.profile-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.user-name {
+    font-size: 13px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-role {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.menu-wrap {
+    display: grid;
+    gap: 6px;
+    padding: 0 12px;
+}
+
+.menu-item {
+    border: none;
+    background: transparent;
+    color: #d8dfed;
+    border-radius: 12px;
+    height: 44px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.menu-item.is-active {
+    background: linear-gradient(90deg, rgba(255, 90, 43, 0.23), rgba(255, 90, 43, 0.08));
+    color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(255, 161, 134, 0.22);
+}
+
+.menu-label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.menu-badge {
+    margin-left: auto;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--brand);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 0 6px;
+}
+
+.foot-wrap {
+    margin-top: auto;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+}
+
+@media (max-width: 880px) {
+    .portal-sidebar {
+        width: 100%;
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .portal-sidebar.is-collapsed {
+        width: 100%;
+    }
+
+    .portal-sidebar.is-collapsed .brand-text,
+    .portal-sidebar.is-collapsed .profile-text,
+    .portal-sidebar.is-collapsed .menu-label,
+    .portal-sidebar.is-collapsed .menu-badge,
+    .portal-sidebar.is-collapsed .foot-wrap {
+        display: initial;
+    }
+}

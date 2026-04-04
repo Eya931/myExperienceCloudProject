@@ -73,3 +73,4 @@ export default class LoginPage extends NavigationMixin(LightningElement) {
             .finally(() => (this.isLoading = false));
     }
 }
+

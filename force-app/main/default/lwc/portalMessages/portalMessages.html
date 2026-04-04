@@ -1,0 +1,40 @@
+<template>
+    <div class="messages-layout">
+        <div class="msg-list-panel">
+            <div class="msg-search">
+                <lightning-icon icon-name="utility:search" size="x-small" alternative-text="Search"></lightning-icon>
+                <input type="text" placeholder="Search messages..." class="ms-input" onchange={handleSearch}/>
+            </div>
+            <div class="msg-items">
+                <template for:each={filteredMessages} for:item="msg">
+                    <div key={msg.id} class={msg.cssClass} data-id={msg.id} onclick={selectMessage}>
+                        <div class="msg-av">T</div>
+                        <div class="msg-bd">
+                            <div class="msg-from">{msg.from}</div>
+                            <div class="msg-subj">{msg.subject}</div>
+                            <div class="msg-prev">{msg.preview}</div>
+                        </div>
+                        <div class="msg-time">{msg.time}</div>
+                    </div>
+                </template>
+            </div>
+        </div>
+        <div class="msg-detail">
+            <template if:true={selectedMsg}>
+                <div class="md-header">
+                    <div class="md-subject">{selectedMsg.subject}</div>
+                    <div class="md-from">
+                        <div class="md-av">T</div>
+                        TalentBridge Talent Team · {selectedMsg.time}
+                    </div>
+                </div>
+                <div class="md-body">
+                    <lightning-formatted-rich-text value={selectedMsg.body}></lightning-formatted-rich-text>
+                </div>
+            </template>
+            <template if:false={selectedMsg}>
+                <div class="md-empty">Select a message to read</div>
+            </template>
+        </div>
+    </div>
+</template>

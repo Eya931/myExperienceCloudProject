@@ -1,0 +1,306 @@
+<template>
+    <div class="modal-form">
+        <!-- Step Indicator -->
+        <div class="steps-indicator">
+            <div class="step-item" class:step-active={isStep1} class:step-completed={currentStep > 1}>
+                <span class="step-number">1</span>
+                <span class="step-label">Infos Basiques</span>
+            </div>
+            <div class="step-connector" class:step-completed={currentStep > 1}></div>
+            <div class="step-item" class:step-active={isStep2} class:step-completed={currentStep > 2}>
+                <span class="step-number">2</span>
+                <span class="step-label">Description IA</span>
+            </div>
+            <div class="step-connector" class:step-completed={currentStep > 2}></div>
+            <div class="step-item" class:step-active={isStep3}>
+                <span class="step-number">3</span>
+                <span class="step-label">Vérification</span>
+            </div>
+        </div>
+
+        <!-- Step 1: Basic Information -->
+        <template if:true={isStep1}>
+            <div class="form-section">
+                <h3 class="section-title">Informations Basiques du Job</h3>
+
+                <!-- Job Title -->
+                <div class="form-group">
+                    <label for="title" class="form-label">Titre du Poste *</label>
+                    <input
+                        id="title"
+                        type="text"
+                        name="title"
+                        class="form-input"
+                        class:has-error={errors.title}
+                        placeholder="e.g., Senior Frontend Developer"
+                        value={formData.title}
+                        onchange={handleInputChange}
+                    />
+                    <template if:true={errors.title}>
+                        <span class="error-message">{errors.title}</span>
+                    </template>
+                </div>
+
+                <!-- Department -->
+                <div class="form-group">
+                    <label for="department" class="form-label">Département</label>
+                    <select
+                        id="department"
+                        name="department"
+                        class="form-input"
+                        value={formData.department}
+                        onchange={handleInputChange}
+                    >
+                        <template for:each={departmentOptions} for:item="option">
+                            <option key={option.value} value={option.value}>{option.label}</option>
+                        </template>
+                    </select>
+                </div>
+
+                <!-- Experience Level -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="experience" class="form-label">Niveau d'Expérience</label>
+                        <select
+                            id="experience"
+                            name="experienceLevel"
+                            class="form-input"
+                            value={formData.experienceLevel}
+                            onchange={handleInputChange}
+                        >
+                            <template for:each={experienceLevelOptions} for:item="option">
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobtype" class="form-label">Type d'Emploi</label>
+                        <select
+                            id="jobtype"
+                            name="jobType"
+                            class="form-input"
+                            value={formData.jobType}
+                            onchange={handleInputChange}
+                        >
+                            <template for:each={jobTypeOptions} for:item="option">
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="form-group">
+                    <label for="skills" class="form-label">Compétences Requises *</label>
+                    <input
+                        id="skills"
+                        type="text"
+                        name="skills"
+                        class="form-input"
+                        class:has-error={errors.skills}
+                        placeholder="e.g., React, TypeScript, Node.js"
+                        value={formData.skills}
+                        onchange={handleInputChange}
+                    />
+                    <template if:true={errors.skills}>
+                        <span class="error-message">{errors.skills}</span>
+                    </template>
+                </div>
+
+                <!-- Location -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="location" class="form-label">Localisation</label>
+                        <select
+                            id="location"
+                            name="location"
+                            class="form-input"
+                            value={formData.location}
+                            onchange={handleInputChange}
+                        >
+                            <template for:each={locationOptions} for:item="option">
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salary" class="form-label">Fourchette Salariale</label>
+                        <input
+                            id="salary"
+                            type="text"
+                            name="salary"
+                            class="form-input"
+                            placeholder="e.g., $120k - $150k"
+                            value={formData.salary}
+                            onchange={handleInputChange}
+                        />
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email" class="form-label">Email de Contact *</label>
+                    <input
+                        id="email"
+                        type="email"
+                        name="email"
+                        class="form-input"
+                        class:has-error={errors.email}
+                        placeholder="recruiter@company.com"
+                        value={formData.email}
+                        onchange={handleInputChange}
+                    />
+                    <template if:true={errors.email}>
+                        <span class="error-message">{errors.email}</span>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick={handleCancel}>Annuler</button>
+                <button class="btn btn-primary" onclick={nextStep}>Continuer</button>
+            </div>
+        </template>
+
+        <!-- Step 2: AI Description Generation -->
+        <template if:true={isStep2}>
+            <div class="form-section">
+                <h3 class="section-title">Générer la Description avec l'IA</h3>
+                <p class="section-subtitle">Nous avons compilé une description basée sur les informations que vous avez fournies. Vous pouvez la modifier selon vos besoins.</p>
+
+                <!-- Generate Button -->
+                <div class="ai-controls">
+                    <button 
+                        class="btn btn-ai" 
+                        onclick={handleGenerateDescription}
+                        disabled={isGenerating}
+                    >
+                        <template if:false={isGenerating}>
+                            <lightning-icon icon-name="utility:refresh" size="x-small"></lightning-icon>
+                            Générer avec l'IA
+                        </template>
+                        <template if:true={isGenerating}>
+                            <span class="spinner"></span>
+                            Génération en cours...
+                        </template>
+                    </button>
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label for="description" class="form-label">Description du Poste</label>
+                    <textarea
+                        id="description"
+                        class="form-textarea"
+                        placeholder="Description auto-générée..."
+                        value={aiContent.description}
+                        onchange={handleEditDescription}
+                    ></textarea>
+                </div>
+
+                <!-- Responsibilities -->
+                <div class="form-group">
+                    <label class="form-label">Responsabilités</label>
+                    <div class="list-items">
+                        <template for:each={aiContent.responsibilities} for:item="resp" for:index="idx">
+                            <div key={resp.id} class="list-item">
+                                <textarea
+                                    class="form-textarea list-textarea"
+                                    data-index={idx}
+                                    value={resp.text}
+                                    onchange={handleEditResponsibility}
+                                ></textarea>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Requirements -->
+                <div class="form-group">
+                    <label class="form-label">Exigences</label>
+                    <div class="list-items">
+                        <template for:each={aiContent.requirements} for:item="req" for:index="idx">
+                            <div key={req.id} class="list-item">
+                                <textarea
+                                    class="form-textarea list-textarea"
+                                    data-index={idx}
+                                    value={req.text}
+                                    onchange={handleEditRequirement}
+                                ></textarea>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick={previousStep}>Retour</button>
+                <button class="btn btn-primary" onclick={nextStep}>Vérifier</button>
+            </div>
+        </template>
+
+        <!-- Step 3: Review & Save -->
+        <template if:true={isStep3}>
+            <div class="form-section">
+                <h3 class="section-title">Vérification Finale</h3>
+                <p class="section-subtitle">Vérifiez toutes les informations avant de créer le job.</p>
+
+                <!-- Summary Card -->
+                <div class="summary-card">
+                    <div class="summary-item">
+                        <span class="summary-label">Titre:</span>
+                        <span class="summary-value">{formData.title}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Département:</span>
+                        <span class="summary-value">{formData.department}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Niveau:</span>
+                        <span class="summary-value">{formData.experienceLevel}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Localisation:</span>
+                        <span class="summary-value">{formData.location}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Type d'Emploi:</span>
+                        <span class="summary-value">{formData.jobType}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Salaire:</span>
+                        <span class="summary-value">{formData.salary}</span>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="preview-section">
+                    <h4>Aperçu du Job</h4>
+                    <div class="preview-card">
+                        <h3>{formData.title}</h3>
+                        <p>{aiContent.description}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick={previousStep}>Retour</button>
+                <button class="btn btn-success" onclick={handleSave} disabled={isSaving}>
+                    <template if:false={isSaving}>
+                        <lightning-icon icon-name="utility:check" size="x-small"></lightning-icon>
+                        Créer le Job
+                    </template>
+                    <template if:true={isSaving}>
+                        <span class="spinner"></span>
+                        Sauvegarde...
+                    </template>
+                </button>
+            </div>
+        </template>
+    </div>
+</template>

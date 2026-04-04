@@ -1,0 +1,149 @@
+<template>
+    <div class="jobs-container">
+        <!-- Header Section -->
+        <div class="jobs-header">
+            <div class="header-content">
+                <h1 class="header-title">Jobs Disponibles</h1>
+                <p class="header-subtitle">Découvrez nos offres d'emploi et postulez maintenant</p>
+            </div>
+            <button class="btn-new-job" onclick={openNewJobModal}>
+                <lightning-icon icon-name="utility:add" size="small"></lightning-icon>
+                Créer un nouveau job
+            </button>
+        </div>
+
+        <!-- Search & Filters Section -->
+        <div class="filters-section">
+            <div class="search-box">
+                <lightning-icon icon-name="utility:search" size="x-small"></lightning-icon>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="Rechercher par titre ou département..." 
+                    onchange={handleSearch}
+                />
+            </div>
+
+            <div class="filter-group">
+                <label>Département:</label>
+                <select class="filter-select" onchange={handleDepartmentFilter}>
+                    <option value="">Tous les départements</option>
+                    <template for:each={departments} for:item="dept">
+                        <option key={dept} value={dept}>{dept}</option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="results-count">
+                {jobCount} position(s) trouvée(s)
+            </div>
+        </div>
+
+        <!-- Jobs Grid -->
+        <div class="jobs-grid">
+            <!-- Loading State -->
+            <template if:true={isLoading}>
+                <div class="loading-state">
+                    <div class="spinner-container">
+                        <div class="spinner"></div>
+                        <p>Chargement des jobs...</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={error}>
+                <div class="error-state">
+                    <lightning-icon icon-name="utility:error" size="large"></lightning-icon>
+                    <p>{error}</p>
+                    <button class="btn btn-primary" onclick={loadJobs}>Réessayer</button>
+                </div>
+            </template>
+
+            <!-- Jobs List -->
+            <template if:false={isLoading}>
+                <template if:true={filteredJobs}>
+                    <template for:each={filteredJobs} for:item="job">
+                        <div key={job.id} class="job-card" data-job-id={job.id} onclick={openJobModal}>
+                            <!-- Card Header -->
+                            <div class="card-header">
+                                <div class="job-title-section">
+                                    <h2 class="job-title">{job.title}</h2>
+                                    <div class="job-meta">
+                                        <span class="badge badge-type">{job.jobType}</span>
+                                        <span class="badge badge-level">{job.experience}</span>
+                                    </div>
+                                </div>
+                                <div class="job-status">
+                                    <span class="status-badge open">{job.status}</span>
+                                    <span class="posted-date">{job.posted}</span>
+                                </div>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body">
+                                <p class="job-description">{job.description}</p>
+                                
+                                <div class="job-details">
+                                    <div class="detail-item">
+                                        <lightning-icon icon-name="utility:location" size="x-small"></lightning-icon>
+                                        <span>{job.location}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <lightning-icon icon-name="utility:salary" size="x-small"></lightning-icon>
+                                        <span>{job.salary}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <lightning-icon icon-name="utility:people" size="x-small"></lightning-icon>
+                                        <span>{job.applicationCount} applications</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card Footer -->
+                            <div class="card-footer">
+                                <span class="dept-badge">{job.department}</span>
+                                <button class="btn-view-details">Voir détails</button>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+            </template>
+
+            <!-- Empty State -->
+            <template if:false={isLoading}>
+                <template if:false={filteredJobs}>
+                    <div class="empty-state">
+                        <lightning-icon icon-name="utility:search" size="large"></lightning-icon>
+                        <p>Aucun job trouvé</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+
+        <!-- Job Modal -->
+        <template if:true={showModal}>
+            <div class="modal-overlay" onclick={closeModal}></div>
+            <div class="modal-container">
+                <div class="modal-header">
+                    <template if:true={selectedJob}>
+                        <h2>Éditer Job</h2>
+                    </template>
+                    <template if:false={selectedJob}>
+                        <h2>Créer un nouveau Job</h2>
+                    </template>
+                    <button class="btn-close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <c-job-modal 
+                        job={selectedJob} 
+                        onjobsaved={handleJobSaved}
+                        oncancel={closeModal}
+                    ></c-job-modal>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

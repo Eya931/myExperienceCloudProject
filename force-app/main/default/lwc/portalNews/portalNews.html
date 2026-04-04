@@ -1,0 +1,21 @@
+<template>
+    <div class="news-page">
+        <div class="news-grid">
+            <template for:each={newsItems} for:item="item">
+                <div key={item.id} class="news-card">
+                    <div class={item.imgClass}>
+                        <div class="nc-img-inner"></div>
+                    </div>
+                    <div class="nc-body">
+                        <div class="nc-cat">{item.category}</div>
+                        <div class="nc-title">{item.title}</div>
+                        <div class="nc-footer">
+                            <span class="nc-date">{item.date}</span>
+                            <span class="nc-read">Read →</span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

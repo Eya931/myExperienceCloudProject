@@ -1,0 +1,13 @@
+.news-page { display:flex; flex-direction:column; gap:14px; }
+.news-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.news-card { background:#fff; border-radius:12px; border:.5px solid #e8ecf2; overflow:hidden; cursor:pointer; transition:transform .2s,box-shadow .2s; }
+.news-card:hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(0,0,0,.07); }
+.nc-img   { height:90px; position:relative; overflow:hidden; }
+.nc-img-1 { background:#1a2235; } .nc-img-2 { background:#253450; } .nc-img-3 { background:#0f172a; }
+.nc-img-4 { background:#1e2d40; } .nc-img-5 { background:#2a1f35; } .nc-img-6 { background:#1a2235; }
+.nc-body   { padding:12px; }
+.nc-cat    { font-size:9px; font-weight:500; letter-spacing:.1em; text-transform:uppercase; color:#e8470a; margin-bottom:5px; }
+.nc-title  { font-size:12px; font-weight:500; color:#0d1117; line-height:1.4; margin-bottom:8px; }
+.nc-footer { display:flex; align-items:center; justify-content:space-between; }
+.nc-date   { font-size:10px; color:#9aa5b4; }
+.nc-read   { font-size:10px; color:#e8470a; font-weight:500; }

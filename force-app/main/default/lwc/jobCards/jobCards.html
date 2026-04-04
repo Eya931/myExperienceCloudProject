@@ -1,110 +1,91 @@
 <template>
     <div class="page">
 
-        <!-- ========== SECTION HEADER ========== -->
-        <section class="section-header">
-            <h2 class="section-title">Find Your Jobs</h2>
-            <p class="section-subtitle">Find the job that best suits you</p>
-        </section>
+        <!-- Section Header -->
+        <div class="section-header">
+            <span class="section-badge">LATEST OPENINGS</span>
+            <h2 class="section-title">Featured Job Offers</h2>
+            <p class="section-subtitle">Hand-picked opportunities from leading companies across every industry.</p>
+        </div>
 
-        <!-- ========== SEARCH BAR ========== -->
-        <section class="search-section">
-            <div class="search-bar">
-                <div class="search-field">
-                    <span class="field-icon">&#128269;</span>
-                    <input
-                        type="text"
-                        class="field-input"
-                        placeholder="Search Position"
-                        value={searchTerm}
-                        onkeyup={handleSearchInput}
-                    />
-                </div>
-                <div class="search-divider"></div>
-                <div class="search-field">
-                    <span class="field-icon">&#128205;</span>
-                    <input
-                        type="text"
-                        class="field-input"
-                        placeholder="Location"
-                        value={locationTerm}
-                        onkeyup={handleLocationInput}
-                    />
-                </div>
-                <div class="search-divider"></div>
-                <div class="search-field filter-field">
-                    <span class="field-icon">&#128188;</span>
-                    <select class="field-select" onchange={handleTypeSelect}>
-                        <option value="">Position Job</option>
-                        <template for:each={typeOptions} for:item="opt">
-                            <option key={opt} value={opt}>{opt}</option>
-                        </template>
-                    </select>
-                </div>
-                <button class="find-btn" onclick={handleFindNow}>Find Now &#8594;</button>
+        <!-- Active filters chips — shows what hero passed -->
+        <template if:true={hasActiveFilters}>
+            <div class="active-filters-bar">
+                <span class="filter-label">Filtering by:</span>
+                <template if:true={searchTerm}>
+                    <span class="active-chip">&#128269; {searchTerm}
+                        <button class="chip-clear" data-filter="search" onclick={handleClearFilter}>&#10005;</button>
+                    </span>
+                </template>
+                <template if:true={locationTerm}>
+                    <span class="active-chip">&#128205; {locationTerm}
+                        <button class="chip-clear" data-filter="location" onclick={handleClearFilter}>&#10005;</button>
+                    </span>
+                </template>
+                <template if:true={selectedType}>
+                    <span class="active-chip">&#128188; {selectedType}
+                        <button class="chip-clear" data-filter="type" onclick={handleClearFilter}>&#10005;</button>
+                    </span>
+                </template>
+                <button class="clear-all-btn" onclick={handleClearAll}>Clear all</button>
             </div>
-        </section>
+        </template>
 
-        <!-- ========== FILTERS ========== -->
-        <section class="filter-section">
+        <!-- Department filters -->
+        <div class="filter-section">
             <div class="filter-row">
-                <button class={allFilterClass} onclick={handleFilterAll}>All</button>
+                <button class={allFilterClass} onclick={handleFilterAll}>All Jobs</button>
                 <template for:each={departmentFilters} for:item="dept">
                     <button key={dept.name} class={dept.className} data-value={dept.name} onclick={handleFilterDepartment}>
                         {dept.name}
                     </button>
                 </template>
             </div>
-            <p class="results-count"><strong>{displayedCount}</strong> jobs found</p>
-            <button onclick={handleRefresh}>&#8635; Refresh Jobs</button>
-        </section>
+            <div class="filter-right">
+                <span class="results-count"><strong>{displayedCount}</strong> jobs found</span>
+                <button class="refresh-btn" onclick={handleRefresh}>&#8635; Refresh</button>
+            </div>
+        </div>
 
-        <!-- ========== CARDS ========== -->
-        <section class="job-grid">
+        <!-- Cards Grid -->
+        <div class="job-grid">
             <template if:true={displayedJobs}>
                 <template for:each={displayedJobs} for:item="job">
-                    <button key={job.Id} class="card" data-id={job.Id} onclick={handleJobClick}>
+                    <div key={job.Id} class="card" data-id={job.Id} onclick={handleJobClick}>
+
+                        <!-- Card Top -->
                         <div class="card-top">
                             <div class={job.avatarClass}>{job.initial}</div>
-                            <div class="card-header-info">
-                                <h3 class="job-title">{job.Job_Title__c}</h3>
-                                <p class="job-company">{job.Name}</p>
+                            <div class="card-company-info">
+                                <p class="company-name">{job.Name}</p>
+                                <div class="company-meta">
+                                    <template if:true={job.Location__c}>
+                                        <span class="location-text">&#128205;&nbsp;{job.Location__c}</span>
+                                    </template>
+                                    <template if:true={job.Employment_Type__c}>
+                                        <span class={job.typeBadgeClass}>{job.Employment_Type__c}</span>
+                                    </template>
+                                </div>
                             </div>
                         </div>
+
+                        <h3 class="job-title">{job.Job_Title__c}</h3>
                         <p class="job-desc">{job.descriptionPreview}</p>
-                        <div class="card-meta">
-                            <span class="meta-pill location">
-                                <span class="pill-icon">&#128205;</span>{job.Location__c}
-                            </span>
-                            <template if:true={job.Employment_Type__c}>
-                                <span class="meta-pill type">
-                                    <span class="pill-icon">&#128188;</span>{job.Employment_Type__c}
-                                </span>
-                            </template>
-                            <template if:true={job.formattedSalary}>
-                                <span class="meta-pill salary">
-                                    <span class="pill-icon">&#128176;</span>{job.formattedSalary}
-                                </span>
-                            </template>
-                        </div>
-                        <div class="card-tags">
-                            <template if:true={job.Department__c}>
-                                <span class="tag dept-tag">{job.Department__c}</span>
-                            </template>
-                            <template if:true={job.Experience_Level__c}>
-                                <span class="tag level-tag">{job.Experience_Level__c}</span>
-                            </template>
-                            <template if:true={job.hasSkills}>
+
+                        <template if:true={job.hasSkills}>
+                            <div class="skills-row">
                                 <template for:each={job.skillsList} for:item="skill">
-                                    <span key={skill.id} class="tag skill-tag">{skill.name}</span>
+                                    <span key={skill.id} class="skill-tag">{skill.name}</span>
                                 </template>
-                            </template>
-                        </div>
+                            </div>
+                        </template>
+
                         <div class="card-footer">
-                            <span class="posted-time">{job.timeAgo}</span>
-                            <span class="apply-btn">Show More &#8594;</span>
+                            <span class="salary-text">{job.salaryDisplay}</span>
+                            <button class="apply-btn">Apply Now &#8594;</button>
                         </div>
-                    </button>
+
+                    </div>
                 </template>
             </template>
 
@@ -112,12 +93,12 @@
                 <div class="empty-state">
                     <div class="empty-icon">&#128269;</div>
                     <h3>No matching jobs</h3>
-                    <p>Try different keywords or remove some filters</p>
+                    <p>Try adjusting your search in the header above</p>
                 </div>
             </template>
-        </section>
+        </div>
 
-        <!-- ========== JOB DETAIL MODAL ========== -->
+        <!-- Modals -->
         <c-job-details
             job={selectedJob}
             visible={showDetail}
@@ -126,14 +107,12 @@
             onapply={handleApply}
         ></c-job-details>
 
-        <!-- ========== APPLICATION FORM MODAL ========== -->
         <c-application-form
             job={applicationJob}
             visible={showApplicationForm}
             onclose={handleApplicationClose}
         ></c-application-form>
 
-        <!-- ========== ERROR ========== -->
         <template if:true={error}>
             <div class="error-panel">
                 <h3>&#9888; Something went wrong</h3>
@@ -141,7 +120,6 @@
             </div>
         </template>
 
-        <!-- ========== LOADING ========== -->
         <template if:false={allJobs}>
             <template if:false={error}>
                 <div class="loading-section">

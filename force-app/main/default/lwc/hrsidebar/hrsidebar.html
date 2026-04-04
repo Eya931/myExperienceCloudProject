@@ -1,0 +1,105 @@
+<template>
+    <div class="sidebar">
+
+        <!-- Logo & Brand -->
+        <div class="sidebar__brand">
+            <div class="sidebar__logo">
+                <span class="sidebar__logo-letter">T</span>
+            </div>
+            <div class="sidebar__brand-text">
+                <span class="sidebar__brand-name">TalentIQ</span>
+                <span class="sidebar__brand-role">HR Portal</span>
+            </div>
+        </div>
+
+        <!-- HR User Info -->
+        <div class="sidebar__user">
+            <div class="sidebar__user-avatar">
+                <span>{userInitials}</span>
+            </div>
+            <div class="sidebar__user-info">
+                <span class="sidebar__user-name">{currentUserName}</span>
+                <span class="sidebar__user-title">HR Manager</span>
+            </div>
+            <div class="sidebar__user-status"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar__nav">
+
+            <div class="sidebar__nav-section">
+                <span class="sidebar__nav-label">Overview</span>
+                <template for:each={overviewLinks} for:item="link">
+                    <button
+                        key={link.id}
+                        class={link.cssClass}
+                        data-id={link.id}
+                        onclick={handleNavClick}
+                        aria-label={link.label}
+                    >
+                        <span class="nav-item__icon">{link.icon}</span>
+                        <span class="nav-item__label">{link.label}</span>
+                        <template if:true={link.badge}>
+                            <span class="nav-item__badge">{link.badge}</span>
+                        </template>
+                    </button>
+                </template>
+            </div>
+
+            <div class="sidebar__nav-section">
+                <span class="sidebar__nav-label">Recruitment</span>
+                <template for:each={recruitmentLinks} for:item="link">
+                    <button
+                        key={link.id}
+                        class={link.cssClass}
+                        data-id={link.id}
+                        onclick={handleNavClick}
+                        aria-label={link.label}
+                    >
+                        <span class="nav-item__icon">{link.icon}</span>
+                        <span class="nav-item__label">{link.label}</span>
+                        <template if:true={link.badge}>
+                            <span class="nav-item__badge">{link.badge}</span>
+                        </template>
+                    </button>
+                </template>
+            </div>
+
+            <div class="sidebar__nav-section">
+                <span class="sidebar__nav-label">Settings</span>
+                <template for:each={settingsLinks} for:item="link">
+                    <button
+                        key={link.id}
+                        class={link.cssClass}
+                        data-id={link.id}
+                        onclick={handleNavClick}
+                        aria-label={link.label}
+                    >
+                        <span class="nav-item__icon">{link.icon}</span>
+                        <span class="nav-item__label">{link.label}</span>
+                    </button>
+                </template>
+            </div>
+
+        </nav>
+
+        <!-- Bottom: Stats Strip -->
+        <div class="sidebar__stats">
+            <div class="sidebar__stat">
+                <span class="sidebar__stat-value">{openJobsCount}</span>
+                <span class="sidebar__stat-label">Open Jobs</span>
+            </div>
+            <div class="sidebar__stat-divider"></div>
+            <div class="sidebar__stat">
+                <span class="sidebar__stat-value">{activeCandidatesCount}</span>
+                <span class="sidebar__stat-label">Candidates</span>
+            </div>
+            <div class="sidebar__stat-divider"></div>
+            <div class="sidebar__stat">
+                <span class="sidebar__stat-value">{interviewsTodayCount}</span>
+                <span class="sidebar__stat-label">Interviews</span>
+            </div>
+        </div>
+
+    </div>
+</template>

@@ -1,0 +1,119 @@
+<template>
+    <section class="faq-section">
+        <div class="faq-inner">
+
+            <!-- Header -->
+            <div class="faq-header">
+                <span class="faq-eyebrow">FAQ</span>
+                <h2 class="faq-title">Frequently Asked Questions</h2>
+                <p class="faq-sub">Everything you need to know about TalentBridge.</p>
+            </div>
+
+            <!-- Search bar -->
+            <div class="faq-search-wrap">
+                <span class="search-icon">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <circle cx="7" cy="7" r="5" stroke="#9ca3af" stroke-width="1.5"/>
+                        <path d="M11 11L14 14" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <input
+                    type="text"
+                    class="faq-search"
+                    placeholder="Search questions..."
+                    value={searchTerm}
+                    oninput={handleSearch}
+                />
+                <template if:true={searchTerm}>
+                    <button class="search-clear" onclick={clearSearch}>&#215;</button>
+                </template>
+            </div>
+
+            <!-- Category filters -->
+            <div class="faq-categories">
+                <template for:each={categories} for:item="cat">
+                    <button
+                        key={cat.value}
+                        class={cat.cssClass}
+                        data-value={cat.value}
+                        onclick={handleCategoryClick}
+                    >
+                        {cat.label}
+                    </button>
+                </template>
+            </div>
+
+            <!-- Result count -->
+            <template if:true={searchTerm}>
+                <p class="result-count">
+                    <template if:true={hasResults}>
+                        {filteredCount} result(s) for &quot;{searchTerm}&quot;
+                    </template>
+                    <template if:false={hasResults}>
+                        No results found for &quot;{searchTerm}&quot;
+                    </template>
+                </p>
+            </template>
+
+            <!-- FAQ list -->
+            <template if:true={hasResults}>
+                <div class="faq-list">
+                    <template for:each={filteredFaqs} for:item="faq">
+                        <div key={faq.id} class={faq.itemClass}>
+
+                            <!-- Question row -->
+                            <div
+                                class="faq-q"
+                                data-id={faq.id}
+                                onclick={handleToggle}
+                                role="button"
+                                tabindex="0"
+                                onkeydown={handleKeydown}
+                                aria-expanded={faq.isOpen}
+                            >
+                                <span class="faq-q-text">{faq.question}</span>
+                                <span class="faq-icon" aria-hidden="true">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                        <path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                    </svg>
+                                </span>
+                            </div>
+
+                            <!-- Answer panel -->
+                            <div class={faq.answerClass}>
+                                <p class="faq-a-text">{faq.answer}</p>
+                                <template if:true={faq.link}>
+                                    <a href={faq.link.url} class="faq-link" target="_blank" rel="noopener">
+                                        {faq.link.label} &rarr;
+                                    </a>
+                                </template>
+                            </div>
+
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Empty state -->
+            <template if:false={hasResults}>
+                <div class="faq-empty">
+                    <div class="empty-icon">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                            <circle cx="20" cy="20" r="18" stroke="#e5e7eb" stroke-width="2"/>
+                            <path d="M15 20h10M20 15v10" stroke="#d1d5db" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <p class="empty-title">No results found</p>
+                    <p class="empty-sub">Try a different keyword or <button class="empty-reset" onclick={clearSearch}>clear your search</button>.</p>
+                </div>
+            </template>
+
+            <!-- Footer CTA -->
+            <div class="faq-cta">
+                <p class="faq-cta-text">Still have questions? We are happy to help.</p>
+                <a href="#contact" class="faq-cta-btn">Contact Our Team &rarr;</a>
+            </div>
+
+        </div>
+    </section>
+</template>
