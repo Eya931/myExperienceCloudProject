@@ -4,7 +4,7 @@
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
     font-family: 'DM Sans', sans-serif;
-    --sds-c-icon-color-foreground-default: #64748b;
+    --sds-c-icon-color-foreground-default: #5f6f86;
 }
 
 lightning-icon {
@@ -96,16 +96,17 @@ lightning-icon[size="medium"] {
     display: grid;
     grid-template-columns: 280px minmax(0, 1fr);
     background:
-        radial-gradient(circle at 12% 3%, rgba(210, 180, 140, 0.1), transparent 34%),
-        linear-gradient(160deg, #f5ede3 0%, #ede5dd 58%, #f0e8e0 100%);
+        radial-gradient(circle at 12% 3%, rgba(225, 149, 63, 0.16), transparent 34%),
+        radial-gradient(circle at 88% 16%, rgba(190, 123, 47, 0.14), transparent 36%),
+        linear-gradient(160deg, #f8f1e6 0%, #f4ecdf 58%, #fbf6ee 100%);
 }
 
 .sidebar {
     background:
-        radial-gradient(circle at 16% 10%, rgba(210, 180, 140, 0.15), transparent 33%),
-        linear-gradient(160deg, #e8dcc8 0%, #e0d4c3 62%, #e5d9c8 100%);
-    color: #5d4a3a;
-    border-right: 1px solid rgba(210, 180, 140, 0.3);
+        radial-gradient(circle at 16% 10%, rgba(210, 141, 72, 0.12), transparent 34%),
+        linear-gradient(160deg, #f2d9bd 0%, #ebccab 52%, #f5e2cb 100%);
+    color: #5a3a1e;
+    border-right: 1px solid rgba(164, 116, 76, 0.35);
     display: flex;
     flex-direction: column;
     transition: width 0.25s ease;
@@ -153,12 +154,12 @@ lightning-icon[size="medium"] {
 .sb-name {
     font-size: 16px;
     font-weight: 700;
-    color: #3d2817;
+    color: #4f3117;
 }
 
 .sb-sub {
     font-size: 12px;
-    color: #8b7355;
+    color: #7a5a3f;
 }
 
 .sb-nav {
@@ -176,15 +177,25 @@ lightning-icon[size="medium"] {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #8b7355;
+    color: #6b4423;
     cursor: pointer;
     overflow: visible;
 }
 
 .sb-item.is-active {
-    background: linear-gradient(90deg, rgba(210, 180, 140, 0.3), rgba(210, 180, 140, 0.15));
-    box-shadow: inset 0 0 0 1px rgba(210, 180, 140, 0.5);
-    color: #5d4a3a;
+    background: linear-gradient(90deg, #6e3a13, #54290e);
+    box-shadow: inset 0 0 0 1px rgba(71, 33, 10, 0.45);
+    color: #ffffff;
+}
+
+.sb-emoji {
+    width: 20px;
+    min-width: 20px;
+    font-size: 15px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sb-label {
@@ -215,7 +226,7 @@ lightning-icon[size="medium"] {
     flex-direction: column;
     gap: 4px;
     font-size: 11px;
-    color: #95a2b8;
+    color: #7d5d43;
 }
 
 .portal-main {
@@ -281,8 +292,8 @@ lightning-icon[size="medium"] {
     flex: 1;
     max-width: 800px;
     margin: 0 auto;
-    border: 1px solid #dcc8b3;
-    background: #fdfaf6;
+    border: 1px solid #e0cfbb;
+    background: #fff9f1;
     border-radius: 999px;
     display: flex;
     align-items: center;
@@ -296,7 +307,7 @@ lightning-icon[size="medium"] {
     outline: none;
     width: 100%;
     font-size: 14px;
-    color: #5d4a3a;
+    color: #5a4532;
 }
 
 .tb-sw lightning-icon {
@@ -315,43 +326,51 @@ lightning-icon[size="medium"] {
     gap: 10px;
 }
 
-.tb-ib {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
-    min-height: 34px;
-    border-radius: 11px;
-    background: #ffffff;
-    border: 1px solid #dbe2ee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
+.tb-pill {
+    border: 1px solid #e0cdb7;
+    background: #fffaf3;
+    color: #6a4a2b;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 700;
 }
 
-.tb-ibadge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    min-width: 16px;
-    height: 16px;
-    border-radius: 999px;
-    background: #c93b10;
-    color: #ffffff;
-    display: flex;
+.tb-icon-btn {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    border: 1px solid #e2cfba;
+    background: #fff8ef;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 9px;
+    cursor: pointer;
+}
+
+.tb-icon-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #8b3e10;
+    color: #ffffff;
+    font-size: 10px;
     font-weight: 700;
     padding: 0 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .tb-avatar {
     width: 34px;
     height: 34px;
     border-radius: 11px;
-    background: linear-gradient(135deg, #1d4ed8, #c93b10);
+    background: linear-gradient(135deg, #6f360f, #8f4a18);
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -360,10 +379,21 @@ lightning-icon[size="medium"] {
     font-weight: 700;
 }
 
+.tb-avatar-btn {
+    border: 1px solid #e2cfba;
+    background: #fff8ef;
+    border-radius: 999px;
+    padding: 2px 8px 2px 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
 .tb-user {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start;
 }
 
 .tb-uname {
@@ -375,6 +405,41 @@ lightning-icon[size="medium"] {
 .tb-urole {
     font-size: 11px;
     color: #475569;
+}
+
+.tb-user-menu {
+    position: relative;
+}
+
+.tb-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 150px;
+    border: 1px solid #e2cfba;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 12px 22px rgba(15, 23, 42, 0.12);
+    padding: 6px;
+    z-index: 30;
+    display: grid;
+    gap: 4px;
+}
+
+.tb-menu-item {
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 12px;
+    color: #1f3657;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.tb-menu-item:hover {
+    background: #fff1e1;
 }
 
 .tb-logout {
@@ -608,7 +673,7 @@ lightning-icon[size="medium"] {
     padding: 7px 12px;
     border-radius: 999px;
     background: #f0ece6;
-    color: #6b6347;
+    color: #4a3f2c;
     font-size: 12px;
     font-weight: 700;
     border: 1px solid transparent;
@@ -616,7 +681,7 @@ lightning-icon[size="medium"] {
 
 .decision-pill.is-selected.accepted {
     background: #e5dccf;
-    color: #6b6347;
+    color: #4a3f2c;
     border-color: #d4a574;
 }
 
@@ -647,8 +712,8 @@ lightning-icon[size="medium"] {
     gap: 10px;
     padding: 10px;
     border-radius: 10px;
-    background: #f5ede3;
-    border: 1px solid #e5dccf;
+    background: #eff4fb;
+    border: 1px solid #dbe5f2;
 }
 
 .notif-icon {
@@ -657,8 +722,8 @@ lightning-icon[size="medium"] {
     min-width: 26px !important;
     min-height: 26px !important;
     border-radius: 8px;
-    background: #fdfaf6;
-    border: 1px solid #dcc8b3;
+    background: #ffffff;
+    border: 1px solid #d2deec;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -676,12 +741,12 @@ lightning-icon[size="medium"] {
 .notif-main {
     font-size: 13px;
     font-weight: 600;
-    color: #5d4a3a;
+    color: #35506f;
 }
 
 .notif-sub {
     font-size: 12px;
-    color: #8b7355;
+    color: #6a7f98;
 }
 
 .notif-status {
@@ -696,12 +761,12 @@ lightning-icon[size="medium"] {
 
 .notif-status.is-confirmed {
     background: #e5dccf;
-    color: #6b6347;
+    color: #3f3323;
 }
 
 .notif-status.is-planned {
-    background: #f0ece6;
-    color: #d4a574;
+    background: #eef4fc;
+    color: #456e9d;
 }
 
 .notif-status.is-pending {

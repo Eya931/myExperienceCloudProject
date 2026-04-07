@@ -7,7 +7,7 @@
             <div class="hero-left">
                 <div class="hero-date">{todayDate}</div>
                 <div class="hero-name">Good morning, {userName}!</div>
-                <div class="hero-sub">You have 1 active coding test and 2 unread messages from the talent team.</div>
+                <div class="hero-sub">{heroSummary}</div>
             </div>
             <div class="hero-av">
                 <div class="hero-hex">
@@ -38,15 +38,20 @@
                     <lightning-button label="View all" variant="neutral" onclick={goToApplications}></lightning-button>
                 </div>
                 <div class="app-list">
-                    <template for:each={applications} for:item="app">
-                        <div key={app.id} class="app-row">
-                            <div class={app.iconClass}>{app.initials}</div>
-                            <div class="app-info">
-                                <div class="app-title">{app.title}</div>
-                                <div class="app-meta">{app.meta}</div>
+                    <template if:true={hasApplications}>
+                        <template for:each={applications} for:item="app">
+                            <div key={app.id} class="app-row">
+                                <div class={app.iconClass}>{app.initials}</div>
+                                <div class="app-info">
+                                    <div class="app-title">{app.title}</div>
+                                    <div class="app-meta">{app.meta}</div>
+                                </div>
+                                <span class={app.badgeClass}>{app.stage}</span>
                             </div>
-                            <span class={app.badgeClass}>{app.stage}</span>
-                        </div>
+                        </template>
+                    </template>
+                    <template if:false={hasApplications}>
+                        <div class="empty-line">No applications yet.</div>
                     </template>
                 </div>
             </div>
@@ -56,17 +61,22 @@
                     <lightning-button label="View all" variant="neutral" onclick={goToMessages}></lightning-button>
                 </div>
                 <div class="msg-list">
-                    <template for:each={messages} for:item="msg">
-                        <div key={msg.id} class="msg-row">
-                            <div class="msg-av">T</div>
-                            <div class="msg-body">
-                                <div class="msg-from">
-                                    TalentBridge Team
-                                    <template if:true={msg.unread}><div class="msg-dot"></div></template>
+                    <template if:true={hasMessages}>
+                        <template for:each={messages} for:item="msg">
+                            <div key={msg.id} class="msg-row">
+                                <div class="msg-av">T</div>
+                                <div class="msg-body">
+                                    <div class="msg-from">
+                                        {msg.from}
+                                        <template if:true={msg.unread}><div class="msg-dot"></div></template>
+                                    </div>
+                                    <div class="msg-subj">{msg.subject}</div>
                                 </div>
-                                <div class="msg-subj">{msg.subject}</div>
                             </div>
-                        </div>
+                        </template>
+                    </template>
+                    <template if:false={hasMessages}>
+                        <div class="empty-line">No messages for now.</div>
                     </template>
                 </div>
             </div>

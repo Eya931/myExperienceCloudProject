@@ -1,13 +1,36 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, track } from 'lwc';
+import getPortalNews from '@salesforce/apex/PortalController.getPortalNews';
+
 export default class PortalNews extends LightningElement {
-    get newsItems() {
-        return [
-            { id:'1', imgClass:'nc-img nc-img-1', category:'Career Tips',   title:'How to Ace a Technical Interview in 2025',           date:'Mar 14, 2025' },
-            { id:'2', imgClass:'nc-img nc-img-2', category:'Salary Guide',  title:'Frontend Engineer Salaries in 2025 — What to Expect', date:'Mar 10, 2025' },
-            { id:'3', imgClass:'nc-img nc-img-3', category:'Industry News', title:'Top 10 Companies Hiring Remote Engineers This Month',  date:'Mar 7, 2025'  },
-            { id:'4', imgClass:'nc-img nc-img-4', category:'Trends',        title:'AI Tools Every Developer Should Know in 2025',        date:'Mar 3, 2025'  },
-            { id:'5', imgClass:'nc-img nc-img-5', category:'Career Growth', title:'From Junior to Senior: A Roadmap for Engineers',      date:'Feb 28, 2025' },
-            { id:'6', imgClass:'nc-img nc-img-6', category:'Remote Work',   title:'Best Practices for Remote Collaboration in Tech',     date:'Feb 24, 2025' },
-        ];
+    @track newsItems = [];
+
+    connectedCallback() {
+        getPortalNews()
+            .then(data => {
+                this.newsItems = Array.isArray(data) ? data.map(item => ({
+                    ...item,
+                    summary: item.summary || '',
+                    cardClass: item.category === 'Job Offers' ? 'news-card is-job' : 'news-card is-company'
+                })) : [];
+            })
+            .catch(() => {
+                this.newsItems = [];
+            });
+    }
+
+    get companyNews() {
+        return this.newsItems.filter(item => item.category === 'Company News');
+    }
+
+    get jobNews() {
+        return this.newsItems.filter(item => item.category === 'Job Offers');
+    }
+
+    get hasCompanyNews() {
+        return this.companyNews.length > 0;
+    }
+
+    get hasJobNews() {
+        return this.jobNews.length > 0;
     }
 }

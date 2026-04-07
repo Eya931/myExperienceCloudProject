@@ -1,0 +1,47 @@
+<template>
+    <div class="assistant-wrap">
+        <div class="assistant-head">
+            <h3>Candidate Assistant</h3>
+            <span>Ask quick questions about your process</span>
+        </div>
+
+        <div class="validation-note">
+            Validate in Experience Cloud with a real candidate user: profile edit, CV upload, applications stage flow, and interview reminders.
+        </div>
+
+        <div class="prompt-row">
+            <template for:each={quickPrompts} for:item="prompt">
+                <button
+                    key={prompt}
+                    type="button"
+                    class="prompt-btn"
+                    data-prompt={prompt}
+                    onclick={handleQuickPrompt}
+                >
+                    {prompt}
+                </button>
+            </template>
+        </div>
+
+        <div class="chat-box">
+            <template for:each={chatItems} for:item="item">
+                <div key={item.id} class={item.cssClass}>
+                    <div class="author">{item.author}</div>
+                    <div class="text">{item.text}</div>
+                </div>
+            </template>
+        </div>
+
+        <div class="input-row">
+            <input
+                class="input"
+                type="text"
+                value={inputMessage}
+                onchange={handleInputChange}
+                onkeydown={handleKeyDown}
+                placeholder="Type your question here..."
+            />
+            <button type="button" class="send-btn" onclick={sendMessage} disabled={isSendDisabled}>Send</button>
+        </div>
+    </div>
+</template>

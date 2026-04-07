@@ -1,21 +1,57 @@
 <template>
     <div class="news-page">
-        <div class="news-grid">
-            <template for:each={newsItems} for:item="item">
-                <div key={item.id} class="news-card">
-                    <div class={item.imgClass}>
-                        <div class="nc-img-inner"></div>
-                    </div>
-                    <div class="nc-body">
-                        <div class="nc-cat">{item.category}</div>
-                        <div class="nc-title">{item.title}</div>
-                        <div class="nc-footer">
-                            <span class="nc-date">{item.date}</span>
-                            <span class="nc-read">Read →</span>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </div>
+        <section class="news-block">
+            <div class="news-head">
+                <h3>Company Announcements</h3>
+                <span>Official updates from TalentBridge</span>
+            </div>
+            <div class="news-grid">
+                <template if:true={hasCompanyNews}>
+                    <template for:each={companyNews} for:item="item">
+                        <article key={item.id} class={item.cardClass}>
+                            <div class="nc-img nc-img-company"></div>
+                            <div class="nc-body">
+                                <div class="nc-cat">{item.category}</div>
+                                <div class="nc-title">{item.title}</div>
+                                <div class="nc-summary">{item.summary}</div>
+                                <div class="nc-footer">
+                                    <span class="nc-date">{item.date}</span>
+                                </div>
+                            </div>
+                        </article>
+                    </template>
+                </template>
+                <template if:false={hasCompanyNews}>
+                    <div class="news-empty">No company announcements available right now.</div>
+                </template>
+            </div>
+        </section>
+
+        <section class="news-block">
+            <div class="news-head">
+                <h3>New Job Offers</h3>
+                <span>Latest open positions in the company</span>
+            </div>
+            <div class="news-grid">
+                <template if:true={hasJobNews}>
+                    <template for:each={jobNews} for:item="item">
+                        <article key={item.id} class={item.cardClass}>
+                            <div class="nc-img nc-img-job"></div>
+                            <div class="nc-body">
+                                <div class="nc-cat">{item.category}</div>
+                                <div class="nc-title">{item.title}</div>
+                                <div class="nc-summary">{item.summary}</div>
+                                <div class="nc-footer">
+                                    <span class="nc-date">{item.date}</span>
+                                </div>
+                            </div>
+                        </article>
+                    </template>
+                </template>
+                <template if:false={hasJobNews}>
+                    <div class="news-empty">No open jobs were found.</div>
+                </template>
+            </div>
+        </section>
     </div>
 </template>

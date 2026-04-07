@@ -1,25 +1,104 @@
 import { LightningElement, track } from 'lwc';
+import getCurrentCandidateProfile from '@salesforce/apex/PortalController.getCurrentCandidateProfile';
+import getMyApplications from '@salesforce/apex/PortalController.getMyApplications';
+import getMyMessages from '@salesforce/apex/PortalController.getMyMessages';
 
 export default class PortalLayout extends LightningElement {
     static LOGIN_URL = '/Core/login';
 
     @track activeSection = 'dashboard';
-    @track userName = 'Amira Belhadj';
-    @track userEmail = 'amira@example.com';
+    @track userName = '';
+    @track userEmail = '';
+    @track userPhone = '';
     @track userInitials = 'AB';
     @track sidebarCollapsed = false;
-    @track currentApplicationStage = 'hr';
-    @track applicationOutcome = 'pending';
+    @track unreadMessagesCount = 0;
+    @track applicationsCount = 0;
+    @track interviewNotifications = [];
+    @track profileCompletion = 0;
+    @track matchingScore = 0;
+    @track cvFileName = '';
+    @track firstName = '';
+    @track lastName = '';
+    @track loadErrorMessage = '';
+    @track isUserMenuOpen = false;
+
+    connectedCallback() {
+        this.loadPortalContext();
+    }
+
+    async loadPortalContext() {
+        try {
+            const [profileResult, applicationsResult, messagesResult] = await Promise.allSettled([
+                getCurrentCandidateProfile(),
+                getMyApplications(),
+                getMyMessages(),
+            ]);
+
+            const profile = profileResult.status === 'fulfilled' ? (profileResult.value || {}) : {};
+            const applications = applicationsResult.status === 'fulfilled' && Array.isArray(applicationsResult.value)
+                ? applicationsResult.value
+                : [];
+            const messageList = messagesResult.status === 'fulfilled' && Array.isArray(messagesResult.value)
+                ? messagesResult.value
+                : [];
+
+            this.firstName = profile?.firstName || '';
+            this.lastName = profile?.lastName || '';
+            this.userName = profile?.fullName || `${this.firstName} ${this.lastName}`.trim() || 'Candidate';
+            this.userEmail = profile?.email || '';
+            this.userPhone = profile?.phone || '';
+            this.profileCompletion = profile?.profileCompletion || 0;
+            this.matchingScore = profile?.matchingScore || 0;
+            this.cvFileName = profile?.cvFileName || '';
+
+            this.userInitials = this.userName
+                .split(' ')
+                .filter(Boolean)
+                .slice(0, 2)
+                .map(part => part[0])
+                .join('')
+                .toUpperCase() || 'C';
+
+            this.applicationsCount = Array.isArray(applications) ? applications.length : 0;
+            this.unreadMessagesCount = messageList.filter(msg => !!msg.unread).length;
+            this.interviewNotifications = messageList
+                .filter(msg => msg.category === 'interview')
+                .slice(0, 5)
+                .map(msg => ({
+                    id: msg.id,
+                    message: msg.subject,
+                    whenText: msg.time,
+                    status: msg.subject?.toLowerCase().includes('reminder') ? 'Reminder' : 'Scheduled',
+                    statusClass: msg.subject?.toLowerCase().includes('reminder')
+                        ? 'notif-status is-confirmed'
+                        : 'notif-status is-planned'
+                }));
+
+            if (profileResult.status === 'rejected' || applicationsResult.status === 'rejected' || messagesResult.status === 'rejected') {
+                const firstError = [profileResult, applicationsResult, messagesResult]
+                    .find(result => result.status === 'rejected');
+                const reason = firstError?.status === 'rejected' ? firstError.reason : null;
+                this.loadErrorMessage = reason?.body?.message || reason?.message || 'Some portal data could not be loaded.';
+            } else {
+                this.loadErrorMessage = '';
+            }
+        } catch (e) {
+            this.userName = 'Candidate';
+            this.userEmail = '';
+            this.loadErrorMessage = e?.body?.message || e?.message || 'Unable to load portal context.';
+        }
+    }
 
     get navItems() {
         return [
-            { id: 'dashboard',    label: 'Dashboard',    icon: 'utility:home',             badge: null },
-            { id: 'jobs',         label: 'Jobs',         icon: 'utility:briefcase',        badge: null },
-            { id: 'applications', label: 'Applications', icon: 'utility:opportunity',      badge: '1'  },
-            { id: 'messages',     label: 'Messages',     icon: 'utility:email',            badge: '2'  },
-            { id: 'profile',      label: 'Profile',      icon: 'utility:user',    badge: null },
-            { id: 'statistics',   label: 'Statistics',   icon: 'utility:chart',            badge: null },
-            { id: 'news',         label: 'Updates',      icon: 'utility:announcement',     badge: null },
+            { id: 'dashboard',    label: 'Dashboard',    icon: '🏠', badge: null },
+            { id: 'applications', label: 'Applications', icon: '🧾', badge: this.applicationsCount > 0 ? String(this.applicationsCount) : null },
+            { id: 'messages',     label: 'Messages',     icon: '💬', badge: this.unreadMessagesCount > 0 ? String(this.unreadMessagesCount) : null },
+            { id: 'profile',      label: 'Profile',      icon: '👤', badge: null },
+            { id: 'statistics',   label: 'Statistics',   icon: '📈', badge: null },
+            { id: 'news',         label: 'News',         icon: '📰', badge: null },
+            { id: 'assistant',    label: 'Assistant',    icon: '🤖', badge: null },
         ].map(item => ({
             ...item,
             cssClass: `sb-item${item.id === this.activeSection ? ' is-active' : ''}`
@@ -32,9 +111,9 @@ export default class PortalLayout extends LightningElement {
 
     get currentTitle() {
         const map = {
-            dashboard: 'Dashboard', search: 'Search Job', jobs: 'Job Opportunities',
+            dashboard: 'Dashboard',
             applications: 'My Applications', messages: 'Messages',
-            profile: 'Profile', statistics: 'Statistics', news: 'News'
+            profile: 'Profile', statistics: 'Statistics', news: 'News', assistant: 'Assistant'
         };
         return map[this.activeSection] || 'Dashboard';
     }
@@ -42,124 +121,65 @@ export default class PortalLayout extends LightningElement {
     get sectionSubtitle() {
         const map = {
             dashboard: 'Overview of your activity and opportunities',
-            jobs: 'Browse and apply for open positions',
-            applications: 'Pipeline opportunity et entretiens planifies',
+            applications: 'Track your real opportunities and current stages',
             messages: 'Read updates from recruiters and support',
             profile: 'Manage your personal and professional information',
             statistics: 'Insights about your candidate journey',
-            news: 'Latest hiring updates and announcements'
+            news: 'Latest company announcements and new job offers',
+            assistant: 'Get instant help for your candidate journey'
         };
         return map[this.activeSection] || '';
     }
 
-    get applicationTimeline() {
-        const orderedStages = [
-            {
-                id: 'coding',
-                label: 'Coding Game',
-                icon: 'utility:einstein',
-                note: 'Evaluation technique en ligne'
-            },
-            {
-                id: 'phone',
-                label: 'Entretien telephonique',
-                icon: 'utility:call',
-                note: 'Pre-qualification avec le recruteur'
-            },
-            {
-                id: 'hr',
-                label: 'Entretien RH',
-                icon: 'utility:groups',
-                note: 'Validation soft skills et culture'
-            },
-            {
-                id: 'technical',
-                label: 'Entretien technique',
-                icon: 'utility:desktop',
-                note: 'Discussion architecture et cas pratiques'
-            },
-            {
-                id: 'final',
-                label: 'Decision finale',
-                icon: 'utility:check',
-                note: 'Acceptee ou refusee selon evaluation complete'
-            }
-        ];
-
-        const currentIndex = orderedStages.findIndex(stage => stage.id === this.currentApplicationStage);
-
-        return orderedStages.map((stage, index) => {
-            let stateClass = 'is-next';
-            if (index < currentIndex) {
-                stateClass = 'is-done';
-            } else if (index === currentIndex) {
-                stateClass = 'is-current';
-            }
-            if (stage.id === 'final' && this.applicationOutcome === 'accepted') {
-                stateClass = 'is-accepted';
-            }
-            if (stage.id === 'final' && this.applicationOutcome === 'refused') {
-                stateClass = 'is-refused';
-            }
-
-            return {
-                ...stage,
-                index: index + 1,
-                className: `stage-item ${stateClass}`
-            };
-        });
+    get hasInterviewNotifications() {
+        return this.interviewNotifications.length > 0;
     }
 
-    get interviewNotifications() {
-        return [
-            {
-                id: 'n1',
-                type: 'Phone',
-                icon: 'utility:call',
-                message: 'Entretien telephonique confirme avec Talent Acquisition',
-                whenText: '08 Avril 2026 - 10:30 (GMT+1)',
-                status: 'Confirme',
-                statusClass: 'notif-status is-confirmed'
-            },
-            {
-                id: 'n2',
-                type: 'RH',
-                icon: 'utility:groups',
-                message: 'Entretien RH programme avec HR Manager',
-                whenText: '11 Avril 2026 - 14:00 (GMT+1)',
-                status: 'Planifie',
-                statusClass: 'notif-status is-planned'
-            },
-            {
-                id: 'n3',
-                type: 'Technical',
-                icon: 'utility:desktop',
-                message: 'Session technique prevue avec le lead engineer',
-                whenText: '15 Avril 2026 - 09:00 (GMT+1)',
-                status: 'A preparer',
-                statusClass: 'notif-status is-pending'
-            }
-        ];
-    }
-
-    get acceptedClass() {
-        return `decision-pill ${this.applicationOutcome === 'accepted' ? 'is-selected accepted' : ''}`;
-    }
-
-    get refusedClass() {
-        return `decision-pill ${this.applicationOutcome === 'refused' ? 'is-selected refused' : ''}`;
+    get hasUnreadMessages() {
+        return this.unreadMessagesCount > 0;
     }
 
     get isDashboard()    { return this.activeSection === 'dashboard'; }
-    get isJobs()         { return this.activeSection === 'jobs'; }
     get isApplications() { return this.activeSection === 'applications'; }
     get isMessages()     { return this.activeSection === 'messages'; }
     get isStatistics()   { return this.activeSection === 'statistics'; }
     get isNews()         { return this.activeSection === 'news'; }
     get isProfile()      { return this.activeSection === 'profile'; }
+    get isAssistant()    { return this.activeSection === 'assistant'; }
 
     handleNav(event) {
         this.activeSection = event.currentTarget.dataset.id;
+        this.isUserMenuOpen = false;
+    }
+
+    handleChildNavigate(event) {
+        const sectionId = event.detail;
+        if (sectionId) {
+            this.activeSection = sectionId;
+            this.isUserMenuOpen = false;
+        }
+    }
+
+    goToMessages() {
+        this.activeSection = 'messages';
+        this.isUserMenuOpen = false;
+    }
+
+    toggleUserMenu() {
+        this.isUserMenuOpen = !this.isUserMenuOpen;
+    }
+
+    handleUserMenuAction(event) {
+        const action = event.currentTarget.dataset.action;
+        this.isUserMenuOpen = false;
+
+        if (action === 'profile') {
+            this.activeSection = 'profile';
+            return;
+        }
+        if (action === 'logout') {
+            this.handleLogout();
+        }
     }
 
     toggleSidebar() {
@@ -169,5 +189,9 @@ export default class PortalLayout extends LightningElement {
     handleLogout() {
         const retUrl = encodeURIComponent(PortalLayout.LOGIN_URL);
         globalThis.location.href = `/secur/logout.jsp?retUrl=${retUrl}`;
+    }
+
+    handleProfileSaved() {
+        this.loadPortalContext();
     }
 }

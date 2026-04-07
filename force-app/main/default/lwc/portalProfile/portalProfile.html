@@ -1,79 +1,63 @@
 <template>
     <div class="profile-layout">
-        <!-- Form card -->
         <div class="form-card">
             <div class="fc-header">
-                <span class="fc-title">Edit Profile</span>
+                <span class="fc-title">My Profile</span>
                 <div class="fc-avail">
                     <span class="fc-avail-label">Available for hire?</span>
-                    <div class="toggle" onclick={toggleAvail}></div>
+                    <button
+                        type="button"
+                        class="toggle"
+                        aria-label="Toggle availability"
+                        onclick={toggleAvail}
+                    ></button>
                 </div>
                 <button class="btn-cancel" onclick={handleCancel}>Cancel</button>
-                <button class="btn-save"   onclick={handleSave}>Save Changes</button>
+                <button class="btn-save" onclick={handleSave} disabled={isSaving}>Save Changes</button>
             </div>
             <div class="fc-body">
-                <div class="sec-label">Generals</div>
+                <div class="sec-label">Identity</div>
                 <div class="grid-3">
-                    <div class="form-group"><label class="form-label">First Name</label><input class="form-input" value={firstName} onchange={handleFirstName}/></div>
-                    <div class="form-group"><label class="form-label">Middle Name</label><input class="form-input" placeholder="Type here"/></div>
-                    <div class="form-group"><label class="form-label">Last Name</label><input class="form-input hi" value={lastName} onchange={handleLastName}/></div>
+                    <div class="form-group"><label class="form-label" for="pp-firstname">First Name</label><input id="pp-firstname" class="form-input" value={firstNameValue} onchange={handleFirstName}/></div>
+                    <div class="form-group"><label class="form-label" for="pp-lastname">Last Name</label><input id="pp-lastname" class="form-input" value={lastNameValue} onchange={handleLastName}/></div>
+                    <div class="form-group"><label class="form-label" for="pp-email">Email</label><input id="pp-email" class="form-input" value={email} onchange={handleEmail}/></div>
                 </div>
-                <div class="grid-3">
-                    <div class="form-group"><label class="form-label">Username</label><input class="form-input" value={userName}/></div>
-                    <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" value="••••••••••••"/></div>
-                    <div class="form-group"><label class="form-label">Re-Type Password</label><input class="form-input" type="password" value="••••••••••••"/></div>
-                </div>
+
                 <div class="sec-label">Contact</div>
-                <div class="grid-3">
-                    <div class="form-group"><label class="form-label">Mobile Phone</label><input class="form-input" value="+216 55 123 456"/></div>
-                    <div class="form-group"><label class="form-label">WhatsApp</label><input class="form-input" value="+216 55 123 456"/></div>
-                    <div class="form-group"><label class="form-label">Email</label><input class="form-input" value={userEmail}/></div>
+                <div class="grid-2">
+                    <div class="form-group"><label class="form-label" for="pp-phone">Phone</label><input id="pp-phone" class="form-input" value={phone} onchange={handlePhone}/></div>
+                    <div class="form-group"><label class="form-label" for="pp-username">Username</label><input id="pp-username" class="form-input" value={userName} disabled/></div>
                 </div>
-                <div class="grid-3">
-                    <div class="form-group"><label class="form-label">Address</label><input class="form-input" value="12 Av. Habib Bourguiba"/></div>
-                    <div class="form-group"><label class="form-label">City</label><input class="form-input" value="Tunis"/></div>
-                    <div class="form-group"><label class="form-label">Country</label><input class="form-input" value="Tunisia"/></div>
+
+                <div class="sec-label">CV / Resume</div>
+                <div class="cv-row">
+                    <div class="cv-name">{displayedCvName}</div>
+                    <input class="cv-input" type="file" accept=".pdf,.doc,.docx,.txt" onchange={handleCvFileChange}/>
+                    <button class="btn-cancel" type="button" onclick={handleBrowseCv}>Choose File</button>
+                    <button class="btn-save" type="button" onclick={handleUploadCv} disabled={isUploadingCv}>Update CV</button>
                 </div>
             </div>
         </div>
 
-        <!-- Right panel -->
         <div class="right-panel">
             <div class="av-card">
-                <div class="av-banner">
-                    <div class="avb-r1"></div><div class="avb-r2"></div><div class="avb-r3"></div>
-                    <div class="avb-t1"></div><div class="avb-t2"></div>
-                    <div class="avb-d"></div><div class="avb-d2"></div><div class="avb-dot"></div>
-                    <div class="avb-ph"></div><div class="avb-pv"></div>
-                </div>
-                <div class="av-ring-outer">
-                    <div class="av-ring-wrap">
-                        <svg class="av-ring-svg" viewBox="0 0 88 88">
-                            <circle cx="44" cy="44" r="37" fill="none" stroke="#f0f2f7" stroke-width="7"/>
-                            <circle cx="44" cy="44" r="37" fill="none" stroke="#1a2235" stroke-width="7" stroke-dasharray="176 56" stroke-dashoffset="28" stroke-linecap="round"/>
-                            <circle cx="44" cy="44" r="37" fill="none" stroke="#e8470a" stroke-width="7" stroke-dasharray="36 196" stroke-dashoffset="-148" stroke-linecap="round"/>
-                        </svg>
-                        <div class="av-circle">{userInitials}</div>
-                    </div>
-                </div>
                 <div class="av-body">
                     <div class="av-name">{userName}</div>
-                    <div class="av-role">Frontend Engineer</div>
-                    <div class="av-stats">
-                        <div class="avst"><div class="avst-num">228</div><div class="avst-lbl">Following</div></div>
-                        <div class="avst"><div class="avst-num">4,842</div><div class="avst-lbl">Followers</div></div>
-                    </div>
+                    <div class="av-role">Candidate</div>
                     <div class="av-div"></div>
-                    <div class="ai-row"><div class="ai-ic">📞</div><span class="ai-v">+216 55 123 456</span></div>
-                    <div class="ai-row"><div class="ai-ic">✉️</div><span class="ai-v">{userEmail}</span></div>
+                    <div class="ai-row"><div class="ai-ic">📞</div><span class="ai-v">{phone}</span></div>
+                    <div class="ai-row"><div class="ai-ic">✉️</div><span class="ai-v">{email}</span></div>
                 </div>
             </div>
             <div class="sk-card">
-                <div class="sk-title">Top Skills</div>
-                <div class="sk-row">
-                    <div class="ski"><div class="sk-ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#f0f2f7" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="#1a2235" stroke-width="5" stroke-dasharray="102 11" stroke-dashoffset="28" stroke-linecap="round"/></svg><div class="sk-p">90%</div></div><div class="sk-n">React</div></div>
-                    <div class="ski"><div class="sk-ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#f0f2f7" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="#e8470a" stroke-width="5" stroke-dasharray="90 23" stroke-dashoffset="28" stroke-linecap="round"/></svg><div class="sk-p">80%</div></div><div class="sk-n">TypeScript</div></div>
-                    <div class="ski"><div class="sk-ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#f0f2f7" stroke-width="5"/><circle cx="22" cy="22" r="18" fill="none" stroke="#1a2235" stroke-width="5" stroke-dasharray="79 34" stroke-dashoffset="28" stroke-linecap="round"/></svg><div class="sk-p">70%</div></div><div class="sk-n">Node.js</div></div>
+                <div class="sk-title">Matching Insights</div>
+                <div class="metric-row">
+                    <span>Real AI Matching Score</span>
+                    <strong>{matchingLabel}</strong>
+                </div>
+                <div class="metric-row">
+                    <span>Profile Completion</span>
+                    <strong>{completionLabel}</strong>
                 </div>
             </div>
         </div>

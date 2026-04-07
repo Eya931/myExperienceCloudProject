@@ -19,7 +19,7 @@
                         type="button"
                         title={item.label}
                     >
-                        <lightning-icon icon-name={item.icon} size="small" alternative-text={item.label} class="sb-icon"></lightning-icon>
+                        <span class="sb-emoji" aria-hidden="true">{item.icon}</span>
                         <span class="sb-label">{item.label}</span>
                         <template if:true={item.badge}>
                             <span class="sb-badge">{item.badge}</span>
@@ -48,23 +48,32 @@
                     <input type="text" class="tb-search" placeholder="Search something here..."/>
                 </div>
                 <div class="tb-right">
-                    <div class="tb-ib">
-                        <lightning-icon icon-name="utility:chat" size="x-small" alternative-text="Messages"></lightning-icon>
-                        <div class="tb-ibadge">2</div>
+                    <div class="tb-pill" if:true={unreadMessagesCount}>
+                        {unreadMessagesCount} unread
                     </div>
-                    <div class="tb-ib">
-                        <lightning-icon icon-name="utility:notification" size="x-small" alternative-text="Notifs"></lightning-icon>
-                        <div class="tb-ibadge">3</div>
-                    </div>
-                    <div class="tb-avatar">{userInitials}</div>
-                    <div class="tb-user">
-                        <span class="tb-uname">{userName}</span>
-                        <span class="tb-urole">Candidate</span>
-                    </div>
-                    <button class="tb-logout" onclick={handleLogout} title="Se déconnecter">
-                        <lightning-icon icon-name="utility:logout" size="xx-small" alternative-text="Logout"></lightning-icon>
-                        <span>Logout</span>
+                    <button class="tb-icon-btn" type="button" onclick={goToMessages} title="Notifications">
+                        <lightning-icon icon-name="utility:reminder" size="x-small" alternative-text="Notifications"></lightning-icon>
+                        <template if:true={hasUnreadMessages}>
+                            <span class="tb-icon-badge">{unreadMessagesCount}</span>
+                        </template>
                     </button>
+
+                    <div class="tb-user-menu">
+                        <button class="tb-avatar-btn" type="button" onclick={toggleUserMenu} title="User menu">
+                            <div class="tb-avatar">{userInitials}</div>
+                            <div class="tb-user">
+                                <span class="tb-uname">{userName}</span>
+                                <span class="tb-urole">Candidate</span>
+                            </div>
+                        </button>
+
+                        <template if:true={isUserMenuOpen}>
+                            <div class="tb-menu">
+                                <button class="tb-menu-item" type="button" data-action="profile" onclick={handleUserMenuAction}>My Profile</button>
+                                <button class="tb-menu-item" type="button" data-action="logout" onclick={handleUserMenuAction}>Logout</button>
+                            </div>
+                        </template>
+                    </div>
                 </div>
             </div>
             <div class="breadcrumb">Portal / <span>{currentTitle}</span></div>
@@ -72,47 +81,17 @@
             <div class="content-area">
                 <div class="content-card">
                     <template if:true={isDashboard}>
-                        <c-portal-dashboard user-name={userName}></c-portal-dashboard>
+                        <c-portal-dashboard user-name={userName} onnavigate={handleChildNavigate}></c-portal-dashboard>
                     </template>
                     <template if:true={isApplications}>
                         <section class="app-shell">
-                            <div class="app-head">
-                                <div>
-                                    <h2 class="app-title">Mon suivi de candidature</h2>
-                                    <p class="app-subtitle">Suivez chaque etape: coding game, entretiens et decision finale.</p>
-                                </div>
-                                <div class="app-ref">Opportunity: OP-2026-1184</div>
-                            </div>
+                            <c-portal-applications></c-portal-applications>
 
-                            <div class="stage-track">
-                                <template for:each={applicationTimeline} for:item="stage">
-                                    <article key={stage.id} class={stage.className}>
-                                        <div class="stage-top">
-                                            <div class="icon-circle">
-                                                <lightning-icon icon-name={stage.icon} size="x-small" alternative-text={stage.label}></lightning-icon>
-                                            </div>
-                                        </div>
-                                        <h3 class="stage-title">{stage.label}</h3>
-                                        <p class="stage-note">{stage.note}</p>
-                                    </article>
-                                </template>
-                            </div>
-
-                            <div class="decision-box">
-                                <span class="decision-label">Decision finale</span>
-                                <div class="decision-row">
-                                    <span class={acceptedClass}>Candidature acceptee</span>
-                                    <span class={refusedClass}>Candidature refusee</span>
-                                </div>
-                            </div>
-
-                            <div class="notif-box">
-                                <h3 class="notif-title">Notifications d'entretiens planifies</h3>
+                            <div class="notif-box" if:true={hasInterviewNotifications}>
+                                <h3 class="notif-title">Interview Notifications</h3>
                                 <template for:each={interviewNotifications} for:item="notif">
                                     <div key={notif.id} class="notif-item">
-                                        <div class="notif-icon">
-                                            <lightning-icon icon-name={notif.icon} size="x-small" alternative-text={notif.type}></lightning-icon>
-                                        </div>
+                                        <div class="notif-icon">📅</div>
                                         <div class="notif-text">
                                             <span class="notif-main">{notif.message}</span>
                                             <span class="notif-sub">{notif.whenText}</span>
@@ -122,9 +101,6 @@
                                 </template>
                             </div>
                         </section>
-                    </template>
-                    <template if:true={isJobs}>
-                        <c-jobs-list></c-jobs-list>
                     </template>
                     <template if:true={isMessages}>
                         <c-portal-messages></c-portal-messages>
@@ -136,7 +112,20 @@
                         <c-portal-news></c-portal-news>
                     </template>
                     <template if:true={isProfile}>
-                        <c-portal-profile user-name={userName} user-email={userEmail}></c-portal-profile>
+                        <c-portal-profile
+                            user-name={userName}
+                            user-email={userEmail}
+                            user-phone={userPhone}
+                            first-name={firstName}
+                            last-name={lastName}
+                            matching-score={matchingScore}
+                            profile-completion={profileCompletion}
+                            cv-file-name={cvFileName}
+                            onprofilesaved={handleProfileSaved}
+                        ></c-portal-profile>
+                    </template>
+                    <template if:true={isAssistant}>
+                        <c-portal-assistant></c-portal-assistant>
                     </template>
                 </div>
             </div>
