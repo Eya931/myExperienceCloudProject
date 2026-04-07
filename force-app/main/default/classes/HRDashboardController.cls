@@ -5,13 +5,15 @@
  */
 public without sharing class HRDashboardController {
 
+    private static final Set<String> OPEN_JOB_STATUSES = new Set<String>{ 'Open', 'Active' };
+
     // ── Stat counters ─────────────────────────────────────────────────────────
 
     @AuraEnabled(cacheable=true)
     public static Integer getOpenJobsCount() {
         return [
             SELECT COUNT() FROM Job__c
-            WHERE Status__c = 'Active'
+            WHERE Status__c IN :OPEN_JOB_STATUSES
         ];
     }
 
@@ -42,32 +44,43 @@ public without sharing class HRDashboardController {
     public static Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new Map<String, Object>();
 
-        // Open jobs
         stats.put('openJobs', [
-            SELECT COUNT() FROM Job__c WHERE Status__c = 'Active'
+            SELECT COUNT() FROM Job__c
+            WHERE Status__c IN :OPEN_JOB_STATUSES
         ]);
 
-        // Urgent jobs (posted > 14 days with low applicants)
         stats.put('urgentJobs', [
             SELECT COUNT() FROM Job__c
-            WHERE Status__c = 'Active'
+            WHERE Status__c IN :OPEN_JOB_STATUSES
             AND Posted_Date__c < :Date.today().addDays(-14)
             AND Number_of_Applicants__c < 5
         ]);
 
-        // Active candidates (open opportunities)
-        stats.put('activeCandidates', [
-            SELECT COUNT() FROM Opportunity WHERE IsClosed = false
+        stats.put('totalApplicants', [
+            SELECT COUNT() FROM Lead
+            WHERE IsDeleted = false
         ]);
 
-        // New this week
-        stats.put('newThisWeek', [
-            SELECT COUNT() FROM Opportunity
+        stats.put('newApplicantsThisWeek', [
+            SELECT COUNT() FROM Lead
             WHERE CreatedDate = THIS_WEEK
+            AND IsDeleted = false
         ]);
 
-        // Scheduled interviews
-       Date firstDay = Date.today().toStartOfMonth();
+        stats.put('convertedCandidates', [
+            SELECT COUNT() FROM Lead
+            WHERE IsConverted = true
+            AND IsDeleted = false
+        ]);
+
+        stats.put('convertedThisWeek', [
+            SELECT COUNT() FROM Lead
+            WHERE IsConverted = true
+            AND ConvertedDate = THIS_WEEK
+            AND IsDeleted = false
+        ]);
+
+        Date firstDay = Date.today().toStartOfMonth();
         Date lastDay  = firstDay.addMonths(1);
         DateTime startDT = DateTime.newInstance(firstDay, Time.newInstance(0,0,0,0));
         DateTime endDT   = DateTime.newInstance(lastDay,  Time.newInstance(0,0,0,0));
@@ -78,7 +91,6 @@ public without sharing class HRDashboardController {
             AND Interview_Date_Time__c < :endDT
         ]);
 
-        // Offers extended
         stats.put('offersExtended', [
             SELECT COUNT() FROM Opportunity WHERE StageName = 'Offer Extended'
         ]);
@@ -150,6 +162,35 @@ public without sharing class HRDashboardController {
         return result;
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getConvertedCandidates() {
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+
+        for (Lead leadRecord : [
+            SELECT Id, FirstName, LastName, Email, AI_Match_Score__c, ConvertedContactId, ConvertedDate
+            FROM Lead
+            WHERE IsConverted = true
+            AND IsDeleted = false
+            ORDER BY ConvertedDate DESC
+            LIMIT 20
+        ]) {
+            String fullName = ((leadRecord.FirstName != null ? leadRecord.FirstName : '')
+                + ' '
+                + (leadRecord.LastName != null ? leadRecord.LastName : '')).trim();
+
+            Map<String, Object> row = new Map<String, Object>();
+            row.put('id', leadRecord.ConvertedContactId != null ? leadRecord.ConvertedContactId : leadRecord.Id);
+            row.put('leadId', leadRecord.Id);
+            row.put('name', String.isNotBlank(fullName) ? fullName : 'Unknown Candidate');
+            row.put('email', leadRecord.Email);
+            row.put('aiScore', leadRecord.AI_Match_Score__c != null ? Integer.valueOf(leadRecord.AI_Match_Score__c) : 0);
+            row.put('convertedDate', leadRecord.ConvertedDate);
+            result.add(row);
+        }
+
+        return result;
+    }
+
     // ── Today's interviews ────────────────────────────────────────────────────
 
     @AuraEnabled(cacheable=true)
@@ -190,26 +231,74 @@ public without sharing class HRDashboardController {
         List<Map<String, Object>> result = new List<Map<String, Object>>();
 
         List<Job__c> jobs = [
-            SELECT Id, Name, Department__c, Location__c,
+            SELECT Id, Name, Job_Title__c, Department__c, Location__c,
                    Number_of_Applicants__c
             FROM Job__c
-            WHERE Status__c = 'Active'
+            WHERE Status__c IN :OPEN_JOB_STATUSES
             ORDER BY Number_of_Applicants__c DESC NULLS LAST
             LIMIT 6
         ];
 
+        Set<Id> jobIds = new Set<Id>();
+        for (Job__c jobRecord : jobs) {
+            jobIds.add(jobRecord.Id);
+        }
+        Map<Id, Integer> applicantsByJob = countApplicantsByJobId(jobIds);
+
         for (Job__c job : jobs) {
             Map<String, Object> row = new Map<String, Object>();
+            Integer exactApplicants = applicantsByJob.containsKey(job.Id)
+                ? applicantsByJob.get(job.Id)
+                : (job.Number_of_Applicants__c != null ? Integer.valueOf(job.Number_of_Applicants__c) : 0);
+
             row.put('id',         job.Id);
-            row.put('title',      job.Name);
+            row.put('title',      String.isNotBlank(job.Job_Title__c) ? job.Job_Title__c : job.Name);
             row.put('dept',       job.Department__c);
             row.put('location',   job.Location__c);
-            row.put('applicants', job.Number_of_Applicants__c != null
-                                   ? Integer.valueOf(job.Number_of_Applicants__c) : 0);
+            row.put('applicants', exactApplicants);
             result.add(row);
         }
 
         return result;
+    }
+
+    private static Map<Id, Integer> countApplicantsByJobId(Set<Id> jobIds) {
+        Map<Id, Integer> counts = new Map<Id, Integer>();
+        if (jobIds == null || jobIds.isEmpty()) {
+            return counts;
+        }
+
+        for (Id jobId : jobIds) {
+            counts.put(jobId, 0);
+        }
+
+        Pattern idPattern = Pattern.compile('(?i)job[_\\s]*id\\s*:\\s*([a-zA-Z0-9]{15,18})');
+        for (Lead leadRecord : [
+            SELECT Description
+            FROM Lead
+            WHERE IsDeleted = false
+            LIMIT 50000
+        ]) {
+            if (String.isBlank(leadRecord.Description)) {
+                continue;
+            }
+
+            Matcher matcher = idPattern.matcher(leadRecord.Description);
+            if (!matcher.find()) {
+                continue;
+            }
+
+            try {
+                Id extractedJobId = (Id) matcher.group(1);
+                if (counts.containsKey(extractedJobId)) {
+                    counts.put(extractedJobId, counts.get(extractedJobId) + 1);
+                }
+            } catch (Exception ignored) {
+                // Ignore malformed IDs in lead descriptions.
+            }
+        }
+
+        return counts;
     }
 
     // ── Pipeline data ─────────────────────────────────────────────────────────

@@ -1,9 +1,8 @@
 import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 
-// Apex
 import getDashboardStats   from '@salesforce/apex/HRDashboardController.getDashboardStats';
-import getRecentApps       from '@salesforce/apex/HRDashboardController.getRecentApplications';
+import getConvertedCandidates from '@salesforce/apex/HRDashboardController.getConvertedCandidates';
 import getTodaysInterviews from '@salesforce/apex/HRDashboardController.getTodaysInterviews';
 import getOpenJobs         from '@salesforce/apex/HRDashboardController.getOpenJobs';
 import getPipelineData     from '@salesforce/apex/HRDashboardController.getPipelineData';
@@ -32,9 +31,8 @@ const DEPT_ICONS = {
 export default class HrDashboard extends NavigationMixin(LightningElement) {
 
     @track isLoading = true;
-    @track hasNotifications = true;
     @track stats = {};
-    @track _recentApps = [];
+    @track _convertedCandidates = [];
     @track _todaysInterviews = [];
     @track _openJobs = [];
     @track _pipelineData = [];
@@ -49,10 +47,10 @@ export default class HrDashboard extends NavigationMixin(LightningElement) {
         }
     }
 
-    @wire(getRecentApps)
-    wiredApps({ error, data }) {
+    @wire(getConvertedCandidates)
+    wiredConvertedCandidates({ error, data }) {
         if (data) {
-            this._recentApps = data.map(a => this._mapApplication(a));
+            this._convertedCandidates = data.map(c => this._mapConvertedCandidate(c));
         }
     }
 
@@ -98,27 +96,27 @@ export default class HrDashboard extends NavigationMixin(LightningElement) {
             },
             {
                 id: 'candidates',
-                label: 'Active Candidates',
-                value: this.stats.activeCandidates || '—',
-                sub: `+${this.stats.newThisWeek || 0} this week`,
+                label: 'Total Applicants',
+                value: this.stats.totalApplicants || 0,
+                sub: `+${this.stats.newApplicantsThisWeek || 0} this week`,
                 icon: '👥',
                 style: '--card-accent: #805AD5',
                 barStyle: 'background: #805AD5; width: 78%',
             },
             {
                 id: 'interviews',
-                label: 'Interviews Scheduled',
-                value: this.stats.scheduledInterviews || '—',
-                sub: 'This week',
+                label: 'Converted Candidates',
+                value: this.stats.convertedCandidates || 0,
+                sub: `+${this.stats.convertedThisWeek || 0} this week`,
                 icon: '📅',
                 style: '--card-accent: #D69E2E',
                 barStyle: 'background: #D69E2E; width: 45%',
             },
             {
                 id: 'offers',
-                label: 'Offers Extended',
-                value: this.stats.offersExtended || '—',
-                sub: 'Pending response',
+                label: 'Interviews Scheduled',
+                value: this.stats.scheduledInterviews || 0,
+                sub: 'This month',
                 icon: '🤝',
                 style: '--card-accent: #48BB78',
                 barStyle: 'background: #48BB78; width: 30%',
@@ -141,8 +139,8 @@ export default class HrDashboard extends NavigationMixin(LightningElement) {
         });
     }
 
-    get recentApplications() {
-        return this._recentApps;
+    get convertedCandidates() {
+        return this._convertedCandidates;
     }
 
     get todaysInterviews() {
@@ -166,28 +164,35 @@ export default class HrDashboard extends NavigationMixin(LightningElement) {
 
     // ── Data mapping helpers ──────────────────────────────────────────────────
 
-    _mapApplication(a) {
-        const score  = a.aiScore || 0;
-        const color  = score >= 90 ? '#48BB78' : score >= 75 ? '#4A6FA5' : score >= 60 ? '#D69E2E' : '#E53E3E';
+    _mapConvertedCandidate(candidate) {
+        const score  = candidate.aiScore || 0;
+        let color = '#E53E3E';
+        if (score >= 90) {
+            color = '#48BB78';
+        } else if (score >= 75) {
+            color = '#4A6FA5';
+        } else if (score >= 60) {
+            color = '#D69E2E';
+        }
         const r      = 14;
         const circ   = 2 * Math.PI * r;
         const dash   = (score / 100) * circ;
         const offset = circ - dash;
-        const name   = `${a.firstName || ''} ${a.lastName || ''}`.trim();
+        const name   = candidate.name || 'Unknown Candidate';
         const parts  = name.split(' ');
         const inits  = parts.length >= 2 ? parts[0][0] + parts[1][0] : name.substring(0,2).toUpperCase();
-        const stageColor = STAGE_COLORS[a.stage] || '#718096';
+        const convertedDate = candidate.convertedDate
+            ? new Date(candidate.convertedDate).toLocaleDateString('en-GB')
+            : '--';
 
         return {
-            id:              a.id,
+            id:              candidate.id,
             name,
-            email:           a.email,
-            role:            a.role,
-            stage:           a.stage,
+            email:           candidate.email,
+            convertedDate,
             score:           score,
             initials:        inits,
             avatarStyle:     `background: linear-gradient(135deg, #4A6FA5, #6C8EBF)`,
-            badgeStyle:      `background: ${stageColor}18; color: ${stageColor}; border: 1px solid ${stageColor}30`,
             scoreColor:      color,
             scoreDash:       `${circ.toFixed(2)}`,
             scoreDashOffset: `${offset.toFixed(2)}`,
@@ -197,6 +202,7 @@ export default class HrDashboard extends NavigationMixin(LightningElement) {
     _mapInterview(iv) {
         const dt     = iv.dateTime ? new Date(iv.dateTime) : null;
         const hour   = dt ? dt.toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--';
+        const ampm   = dt && dt.getHours() >= 12 ? 'PM' : 'AM';
         const name   = iv.candidateName || 'Unknown';
         const parts  = name.split(' ');
         const inits  = parts.length >= 2 ? parts[0][0] + parts[1][0] : name.substring(0,2).toUpperCase();
@@ -209,30 +215,15 @@ export default class HrDashboard extends NavigationMixin(LightningElement) {
             format:        iv.format || 'Video Call',
             initials:      inits,
             hour,
-            ampm:          dt ? (dt.getHours() >= 12 ? 'PM' : 'AM') : '',
+            ampm:          dt ? ampm : '',
             avatarStyle:   'background: linear-gradient(135deg, #805AD5, #9F7AEA)',
         };
     }
 
     // ── Event handlers ────────────────────────────────────────────────────────
 
-    handleCreateJob() {
-        this[NavigationMixin.Navigate]({
-            type: 'standard__navItemPage',
-            attributes: { apiName: 'TalentIQ_Create_Job' },
-        });
-    }
-
     handleViewCandidate(event) {
         event.stopPropagation();
-        const id = event.currentTarget.dataset.id;
-        this[NavigationMixin.Navigate]({
-            type: 'standard__recordPage',
-            attributes: { recordId: id, actionName: 'view' },
-        });
-    }
-
-    handleRowClick(event) {
         const id = event.currentTarget.dataset.id;
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
@@ -264,8 +255,8 @@ export default class HrDashboard extends NavigationMixin(LightningElement) {
 
     navigateToJobs() {
         this[NavigationMixin.Navigate]({
-            type: 'standard__objectPage',
-            attributes: { objectApiName: 'Job_Offer__c', actionName: 'list' },
+            type: 'standard__component',
+            attributes: { componentName: 'c__hrjobmanagement' },
         });
     }
 

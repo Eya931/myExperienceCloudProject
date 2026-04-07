@@ -17,15 +17,6 @@
                         onkeyup={handleSearch}
                     />
                 </div>
-                <button class="topbar__btn topbar__btn--primary" onclick={handleCreateJob}>
-                    <span>✦</span> Create Job
-                </button>
-                <div class="topbar__notif">
-                    <span>🔔</span>
-                    <template if:true={hasNotifications}>
-                        <span class="topbar__notif-dot"></span>
-                    </template>
-                </div>
             </div>
         </div>
 
@@ -82,10 +73,10 @@
                     </div>
                 </div>
 
-                <!-- Recent Applications Table -->
+                <!-- Converted Candidates Table -->
                 <div class="panel">
                     <div class="panel__header">
-                        <h2 class="panel__title">Recent Applications</h2>
+                        <h2 class="panel__title">Converted Candidates</h2>
                         <button class="panel__link" onclick={navigateToCandidates}>See all →</button>
                     </div>
                     <template if:true={isLoading}>
@@ -97,30 +88,27 @@
                                 <thead>
                                     <tr>
                                         <th>Candidate</th>
-                                        <th>Role</th>
-                                        <th>Stage</th>
+                                        <th>Email</th>
+                                        <th>Converted On</th>
                                         <th>AI Score</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <template for:each={recentApplications} for:item="app">
-                                        <tr key={app.id} onclick={handleRowClick} data-id={app.id} class="table__row">
+                                    <template for:each={convertedCandidates} for:item="candidate">
+                                        <tr key={candidate.id} class="table__row">
                                             <td>
                                                 <div class="candidate-cell">
-                                                    <div class="candidate-cell__avatar" style={app.avatarStyle}>
-                                                        {app.initials}
+                                                    <div class="candidate-cell__avatar" style={candidate.avatarStyle}>
+                                                        {candidate.initials}
                                                     </div>
                                                     <div>
-                                                        <p class="candidate-cell__name">{app.name}</p>
-                                                        <p class="candidate-cell__email">{app.email}</p>
+                                                        <p class="candidate-cell__name">{candidate.name}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="table__muted">{app.role}</td>
-                                            <td>
-                                                <span class="stage-badge" style={app.badgeStyle}>{app.stage}</span>
-                                            </td>
+                                            <td class="table__muted">{candidate.email}</td>
+                                            <td class="table__muted">{candidate.convertedDate}</td>
                                             <td>
                                                 <div class="score-wrap">
                                                     <svg class="score-ring" viewBox="0 0 36 36" width="38" height="38">
@@ -128,19 +116,19 @@
                                                         <circle
                                                             cx="18" cy="18" r="14"
                                                             fill="none"
-                                                            stroke={app.scoreColor}
+                                                            stroke={candidate.scoreColor}
                                                             stroke-width="3.5"
-                                                            stroke-dasharray={app.scoreDash}
-                                                            stroke-dashoffset={app.scoreDashOffset}
+                                                            stroke-dasharray={candidate.scoreDash}
+                                                            stroke-dashoffset={candidate.scoreDashOffset}
                                                             stroke-linecap="round"
                                                             transform="rotate(-90 18 18)"
                                                         />
-                                                        <text x="18" y="22" text-anchor="middle" class="score-ring__text" fill={app.scoreColor}>{app.score}</text>
+                                                        <text x="18" y="22" text-anchor="middle" class="score-ring__text" fill={candidate.scoreColor}>{candidate.score}</text>
                                                     </svg>
                                                 </div>
                                             </td>
                                             <td>
-                                                <button class="btn-view" data-id={app.id} onclick={handleViewCandidate}>
+                                                <button class="btn-view" data-id={candidate.id} onclick={handleViewCandidate}>
                                                     View →
                                                 </button>
                                             </td>
@@ -195,14 +183,14 @@
                         <button class="panel__link" onclick={navigateToJobs}>View all →</button>
                     </div>
                     <template for:each={openJobs} for:item="job">
-                        <div key={job.id} class="job-row" onclick={handleJobClick} data-id={job.id}>
+                        <button type="button" key={job.id} class="job-row" onclick={handleJobClick} data-id={job.id}>
                             <div class="job-row__icon">{job.deptIcon}</div>
                             <div class="job-row__info">
                                 <p class="job-row__title">{job.title}</p>
                                 <p class="job-row__meta">{job.dept} · {job.location}</p>
                             </div>
                             <span class="job-row__count">{job.applicants}</span>
-                        </div>
+                        </button>
                     </template>
                 </div>
 

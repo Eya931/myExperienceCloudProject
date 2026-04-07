@@ -5,6 +5,7 @@
 :host {
     display: block;
     flex: 1;
+    width: 100%;
     min-height: 100vh;
     background: #F5F7FA;
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -13,7 +14,8 @@
 /* ── Dashboard wrapper ───────────────────────────────────── */
 .dashboard {
     padding: 0;
-    max-width: 1200px;
+    width: 100%;
+    max-width: none;
 }
 
 /* ── Top Bar ─────────────────────────────────────────────── */
@@ -53,6 +55,8 @@
 .topbar__right {
     display: flex;
     align-items: center;
+    flex: 1;
+    justify-content: flex-end;
     gap: 12px;
 }
 
@@ -64,7 +68,7 @@
     border: 1px solid #E2E8F0;
     border-radius: 10px;
     padding: 8px 14px;
-    width: 240px;
+    width: min(100%, 320px);
     transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -322,8 +326,8 @@
 
 .panel__footer-btn:hover {
     border-color: #4A6FA5;
-    color: #4A6FA5;
-    background: rgba(74,111,165,0.04);
+    color: #1F3D66;
+    background: #FFFFFF;
 }
 
 /* ── Pipeline ────────────────────────────────────────────── */
@@ -585,6 +589,11 @@
     align-items: center;
     gap: 10px;
     padding: 10px 12px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-family: inherit;
     border-radius: 10px;
     margin-bottom: 4px;
     cursor: pointer;
@@ -626,8 +635,9 @@
 .job-row__count {
     font-size: 12px;
     font-weight: 700;
-    color: #4A6FA5;
-    background: rgba(74,111,165,0.1);
+    color: #1F3D66;
+    background: #FFFFFF;
+    border: 1px solid #D4DFED;
     border-radius: 999px;
     padding: 2px 9px;
     flex-shrink: 0;
